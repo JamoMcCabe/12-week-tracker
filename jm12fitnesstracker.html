@@ -270,6 +270,37 @@
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: #1a1f35; }
 
+        .ex-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-btn {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #334155;
+            background: transparent;
+            color: #64748b;
+            font-size: 0.72em;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .info-btn:hover {
+            border-color: #7dd3fc;
+            color: #7dd3fc;
+            background: #0f1117;
+        }
+
         .ex-input {
             width: 68px;
             padding: 4px 6px;
@@ -323,9 +354,148 @@
             border-color: #4ade80;
             color: #4ade80;
         }
+
+        /* ── Form Tips Modal ── */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: #1e2130;
+            border: 1px solid #2d3148;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.3em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover { color: #e2e8f0; }
+
+        .modal-exercise-name {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0 28px 4px 0;
+        }
+
+        .modal-muscle-tag {
+            display: inline-block;
+            font-size: 0.72em;
+            background: #0f3460;
+            color: #7dd3fc;
+            padding: 2px 10px;
+            border-radius: 99px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .modal-tips-heading {
+            font-size: 0.75em;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+
+        .modal-tips {
+            list-style: none;
+            margin: 0 0 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-tips li {
+            display: flex;
+            gap: 10px;
+            font-size: 0.88em;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+
+        .modal-tips li::before {
+            content: '→';
+            color: #7dd3fc;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .modal-yt-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background: #1e0a0a;
+            border: 1px solid #7f1d1d;
+            border-radius: 10px;
+            color: #fca5a5;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .modal-yt-btn:hover {
+            background: #3b0f0f;
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        .yt-icon {
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
+
+<!-- Form tips modal -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+        <div class="modal-exercise-name" id="modal-title"></div>
+        <div class="modal-muscle-tag" id="modal-muscle"></div>
+        <div class="modal-tips-heading">Key form cues</div>
+        <ul class="modal-tips" id="modal-tips"></ul>
+        <a class="modal-yt-btn" id="modal-yt" target="_blank" rel="noopener noreferrer">
+            <span class="yt-icon">▶</span> Search YouTube for form tutorial
+        </a>
+    </div>
+</div>
 
 <div class="container">
     <h1>12-Week Transformation Tracker</h1>
@@ -370,12 +540,78 @@
             id: 'mon',
             label: 'Monday (Day 1) — Chest & Triceps',
             exercises: [
-                { name: 'Dumbbell Incline bench press',               sets: '4', reps: '8-10',         weight: '12.5', rest: '90' },
-                { name: 'Dumbbell standing shoulder press',           sets: '4', reps: '6-8',           weight: '12.5', rest: '90' },
-                { name: 'Cable bent over chest fly',                  sets: '3', reps: '10-12',         weight: '40',   rest: '90' },
-                { name: 'Cuffed lateral raises',                      sets: '3', reps: '15-20',         weight: '15',   rest: '90' },
-                { name: 'Cable straight bar triceps pushdown',        sets: '3', reps: '12-15',         weight: '40',   rest: '90' },
-                { name: 'Cable standing overhead triceps extension',  sets: '3', reps: '15-20',         weight: '20',   rest: '90' },
+                {
+                    name: 'Dumbbell Incline bench press',
+                    sets: '4', reps: '8-10', weight: '12.5', rest: '90',
+                    muscle: 'Upper chest · Front delts',
+                    tips: [
+                        'Set bench to 30–45° — any higher shifts work to delts, any lower to mid chest',
+                        'Retract and depress shoulder blades before unracking and keep them pinched throughout',
+                        'Lower dumbbells to upper chest level, elbows at ~75° from torso (not flared to 90°)',
+                        'Press up and slightly inward — don\'t fully lock out elbows at the top',
+                        'Keep wrists stacked over elbows; avoid letting them bend back',
+                    ],
+                },
+                {
+                    name: 'Dumbbell standing shoulder press',
+                    sets: '4', reps: '6-8', weight: '12.5', rest: '90',
+                    muscle: 'Front & side delts · Triceps',
+                    tips: [
+                        'Start with dumbbells at shoulder height, palms facing forward or slightly inward',
+                        'Brace your core hard — standing means no back support; avoid excessive lumbar arch',
+                        'Press straight overhead, bringing dumbbells close together at the top',
+                        'Lower under full control back to shoulder height for each rep',
+                        'Don\'t use leg drive — if you\'re having to push off your legs, the weight is too heavy',
+                    ],
+                },
+                {
+                    name: 'Cable bent over chest fly',
+                    sets: '3', reps: '10-12', weight: '40', rest: '90',
+                    muscle: 'Mid chest · Front delts',
+                    tips: [
+                        'Set cables at shoulder height; hinge forward at the hips about 30–45°, slight knee bend',
+                        'Hold handles with a very slight bend in the elbows — keep that angle fixed throughout',
+                        'Drive the movement by squeezing your chest, not by bending or straightening the elbows',
+                        'Bring hands together in front of your chest, thumbs nearly touching at the peak',
+                        'Control the eccentric — don\'t let the cables yank your arms back',
+                    ],
+                },
+                {
+                    name: 'Cuffed lateral raises',
+                    sets: '3', reps: '15-20', weight: '15', rest: '90',
+                    muscle: 'Side delts',
+                    tips: [
+                        'Lead with your elbows, not your hands — imagine pouring a jug of water out to the side',
+                        'Raise to shoulder height only; going higher recruits traps and loses side delt tension',
+                        'Keep a very slight elbow bend (about 10–15°) and maintain it the whole set',
+                        'Don\'t shrug your shoulders — if you are, the weight is too heavy',
+                        'Lower slowly (2–3 seconds) — the eccentric is where a lot of the work happens',
+                    ],
+                },
+                {
+                    name: 'Cable straight bar triceps pushdown',
+                    sets: '3', reps: '12-15', weight: '40', rest: '90',
+                    muscle: 'Triceps (all 3 heads)',
+                    tips: [
+                        'Stand close to the cable stack, lean very slightly forward at the hips',
+                        'Pin elbows tightly to your sides — they must not move; they\'re the pivot point',
+                        'Push down until arms are fully extended and squeeze the triceps hard',
+                        'Control the bar on the way back up — stop before elbows rise above 90°',
+                        'Avoid using your lats to initiate the push; the movement should be forearm-only',
+                    ],
+                },
+                {
+                    name: 'Cable standing overhead triceps extension',
+                    sets: '3', reps: '15-20', weight: '20', rest: '90',
+                    muscle: 'Triceps long head',
+                    tips: [
+                        'Face away from the cable, set the pulley low; step forward into a stagger stance',
+                        'Raise arms overhead so upper arms are beside your ears — they stay there the whole set',
+                        'Extend fully at the top, locking out and squeezing the triceps',
+                        'Lower slowly until you feel a deep stretch in the triceps behind your head',
+                        'Keep your core braced to avoid lumbar extension as the weight pulls overhead',
+                    ],
+                },
             ],
             notes: ['Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s'],
         },
@@ -383,12 +619,78 @@
             id: 'wed',
             label: 'Wednesday (Day 3) — Back & Biceps',
             exercises: [
-                { name: 'Lat Machine wide grip pulldown',  sets: '4', reps: '10-12',  weight: '50', rest: '90' },
-                { name: 'Barbell bent over row',           sets: '4', reps: '5-8',    weight: '40', rest: '90' },
-                { name: 'Cable seated row',                sets: '4', reps: '10-12',  weight: '35', rest: '90' },
-                { name: 'Barbell shrug',                   sets: '2', reps: '12-15',  weight: '30', rest: '90' },
-                { name: 'Barbell bicep curl',              sets: '3', reps: '10-15',  weight: '15', rest: '90' },
-                { name: 'Cable single arm bicep curl',     sets: '2', reps: '15-20',  weight: '20', rest: '90' },
+                {
+                    name: 'Lat Machine wide grip pulldown',
+                    sets: '4', reps: '10-12', weight: '50', rest: '90',
+                    muscle: 'Lats · Rear delts · Biceps',
+                    tips: [
+                        'Grip the bar wider than shoulder width; lean back slightly (about 10–15°) and stay there',
+                        'Initiate by depressing the shoulder blades first — imagine tucking them into your back pockets',
+                        'Drive your elbows down and back toward your hips, not just backward',
+                        'Pull bar to your upper chest; pause and squeeze the lats at the bottom',
+                        'Let the bar rise under control — don\'t let your shoulder blades wing up at the top',
+                    ],
+                },
+                {
+                    name: 'Barbell bent over row',
+                    sets: '4', reps: '5-8', weight: '40', rest: '90',
+                    muscle: 'Lats · Mid-back · Rear delts · Biceps',
+                    tips: [
+                        'Hinge at hips until torso is about 45° to horizontal; soft knee bend, back flat',
+                        'Pull bar to your lower chest/upper abdomen — higher than that = more upper back, lower = more lats',
+                        'Drive the elbows up and back, squeezing shoulder blades together at the top',
+                        'Keep the bar close to your body throughout the pull — no swinging',
+                        'Brace core and avoid rounding the lower back; if you are, reduce weight',
+                    ],
+                },
+                {
+                    name: 'Cable seated row',
+                    sets: '4', reps: '10-12', weight: '35', rest: '90',
+                    muscle: 'Mid-back · Lats · Rhomboids',
+                    tips: [
+                        'Sit tall with a very slight lean forward at the start; don\'t collapse the chest',
+                        'Pull the handle to your lower chest/abdomen, driving elbows back past your torso',
+                        'At the peak contraction, squeeze your shoulder blades together for a 1-second hold',
+                        'Let the cable pull your arms back out under control — don\'t let your upper body fall forward',
+                        'The torso should be roughly upright; avoid excessive forward and backward rocking',
+                    ],
+                },
+                {
+                    name: 'Barbell shrug',
+                    sets: '2', reps: '12-15', weight: '30', rest: '90',
+                    muscle: 'Traps (upper)',
+                    tips: [
+                        'Hold the bar at hip level with an overhand grip, arms straight',
+                        'Shrug straight up — think "shoulders to ears", NOT rolling the shoulders forward or back',
+                        'Hold the contracted position for 1–2 seconds to fully engage the upper traps',
+                        'Lower slowly and fully to get a complete stretch at the bottom',
+                        'Keep your neck neutral — don\'t jut your head forward or tuck your chin',
+                    ],
+                },
+                {
+                    name: 'Barbell bicep curl',
+                    sets: '3', reps: '10-15', weight: '15', rest: '90',
+                    muscle: 'Biceps brachii · Brachialis',
+                    tips: [
+                        'Stand with feet shoulder-width, barbell at arms\' length with underhand grip',
+                        'Pin elbows to the sides — they should barely move throughout the set',
+                        'Curl the bar up in a smooth arc, fully contracting the biceps at the top',
+                        'Do not swing the torso or use momentum — if you are, reduce the weight',
+                        'Lower all the way back to full arm extension to hit the full range of motion',
+                    ],
+                },
+                {
+                    name: 'Cable single arm bicep curl',
+                    sets: '2', reps: '15-20', weight: '20', rest: '90',
+                    muscle: 'Biceps brachii',
+                    tips: [
+                        'Stand side-on or facing the cable, set pulley to low; hold the handle underhand',
+                        'Keep your upper arm stationary — elbow stays at your side throughout',
+                        'Curl fully until your palm faces your shoulder, then squeeze for 1 second',
+                        'Lower slowly under control — the cable provides continuous tension through the eccentric',
+                        'Do all reps on one side before switching; avoid twisting the torso to help',
+                    ],
+                },
             ],
             notes: [],
         },
@@ -396,12 +698,78 @@
             id: 'fri',
             label: 'Friday (Day 5) — Legs & Abs + Cardio',
             exercises: [
-                { name: 'Machine seated leg curl',        sets: '3', reps: '10-15',       weight: '45', rest: '90' },
-                { name: 'Hack Squats',                    sets: '3', reps: '10-15',       weight: '55', rest: '90' },
-                { name: 'Seated leg press',               sets: '4', reps: '15-20',       weight: '55', rest: '90' },
-                { name: 'Barbell romanian deadlift',      sets: '2', reps: '10-15',       weight: '20', rest: '90' },
-                { name: 'Machine seated calf raise',      sets: '4', reps: '10-15',       weight: '30', rest: '90' },
-                { name: 'Dumbbell walking lunge',         sets: '1', reps: 'Until Failure', weight: '10', rest: '-' },
+                {
+                    name: 'Machine seated leg curl',
+                    sets: '3', reps: '10-15', weight: '45', rest: '90',
+                    muscle: 'Hamstrings',
+                    tips: [
+                        'Adjust the machine so the pivot aligns exactly with your knee joint',
+                        'Sit tall (or lie prone); keep your hips pressed firmly into the seat/pad throughout',
+                        'Curl until your hamstrings are fully contracted — aim to get your heels toward your glutes',
+                        'Pause and squeeze at the top, then lower over 2–3 seconds — no letting it drop',
+                        'Point toes slightly toward shins (dorsiflexed) to increase hamstring activation',
+                    ],
+                },
+                {
+                    name: 'Hack Squats',
+                    sets: '3', reps: '10-15', weight: '55', rest: '90',
+                    muscle: 'Quads · Glutes · Hamstrings',
+                    tips: [
+                        'Place feet shoulder-width or slightly wider; toes angled out 15–30°',
+                        'Keep lower back firmly pressed into the pad throughout the movement',
+                        'Lower until thighs are parallel to the platform or below — full depth hits quads more',
+                        'Drive through the full foot (not just heels) and press your knees out in line with your toes',
+                        'Don\'t lock out the knees fully at the top — keep a slight bend to maintain tension',
+                    ],
+                },
+                {
+                    name: 'Seated leg press',
+                    sets: '4', reps: '15-20', weight: '55', rest: '90',
+                    muscle: 'Quads · Glutes · Hamstrings',
+                    tips: [
+                        'Place feet hip-width apart in the middle to upper portion of the platform',
+                        'Lower until knees are around 90° — stop before lower back rounds off the seat',
+                        'Drive through the whole foot, pushing knees out wide in line with your toes',
+                        'Do not lock out the knees at the top; keep a slight bend to protect the joint and maintain tension',
+                        'Keep lower back and glutes in contact with the seat throughout',
+                    ],
+                },
+                {
+                    name: 'Barbell romanian deadlift',
+                    sets: '2', reps: '10-15', weight: '20', rest: '90',
+                    muscle: 'Hamstrings · Glutes · Lower back',
+                    tips: [
+                        'Start standing with bar at hip height, overhand grip just outside your hips',
+                        'Push hips back as you lower the bar — this is a hip hinge, not a squat',
+                        'Maintain a slight knee bend (soft knees), back flat and neutral throughout',
+                        'Lower until you feel a strong hamstring stretch — typically just below the knee',
+                        'Drive hips forward to return to standing; squeeze glutes hard at the top',
+                    ],
+                },
+                {
+                    name: 'Machine seated calf raise',
+                    sets: '4', reps: '10-15', weight: '30', rest: '90',
+                    muscle: 'Soleus · Gastrocnemius',
+                    tips: [
+                        'Place the balls of your feet on the edge of the footplate — heels hanging off',
+                        'Lower your heels as far as possible to get a full stretch at the bottom',
+                        'Press up onto the balls of your feet as high as possible; pause and squeeze at the top',
+                        'No bouncing at the bottom — pausing at the stretched position prevents this',
+                        'Go slow on the way down (3 seconds); calves respond well to slow eccentrics',
+                    ],
+                },
+                {
+                    name: 'Dumbbell walking lunge',
+                    sets: '1', reps: 'Until Failure', weight: '10', rest: '-',
+                    muscle: 'Quads · Glutes · Hamstrings',
+                    tips: [
+                        'Hold dumbbells at your sides, stand tall with core braced',
+                        'Step forward and lower your back knee toward the floor — aim for ~1" above ground',
+                        'Front shin should stay roughly vertical; knee tracks over the second toe',
+                        'Push through your front heel and step through, bringing feet together briefly',
+                        'Keep your torso upright throughout — don\'t lean forward over the front knee',
+                    ],
+                },
             ],
             notes: [
                 'Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s',
@@ -412,12 +780,78 @@
             id: 'sat',
             label: 'Saturday (Day 6) — Arms Focus',
             exercises: [
-                { name: 'Crossbody hammer curls',                     sets: '3', reps: '10-15', weight: '10',          rest: '60' },
-                { name: 'EZ Bar preacher curl',                       sets: '3', reps: '8-10',  weight: '10',          rest: '60' },
-                { name: 'Barbell bicep curl',                         sets: '2', reps: '8',     weight: '17.5',        rest: '60' },
-                { name: 'Cable rope triceps extension',               sets: '4', reps: '12',    weight: '40',          rest: '60' },
-                { name: 'Plate weighted dip',                         sets: '3', reps: '8-12',  weight: 'Body Weight', rest: '60' },
-                { name: 'Cable standing overhead triceps extension',  sets: '3', reps: '15-20', weight: '20',          rest: '60' },
+                {
+                    name: 'Crossbody hammer curls',
+                    sets: '3', reps: '10-15', weight: '10', rest: '60',
+                    muscle: 'Brachialis · Brachioradialis · Biceps',
+                    tips: [
+                        'Hold dumbbells with a neutral (hammer) grip — thumbs facing up throughout',
+                        'Curl one dumbbell across your body toward the opposite shoulder',
+                        'Keep your upper arm stationary; only the forearm moves',
+                        'The crossbody angle targets the brachialis more than a standard curl',
+                        'Alternate arms or complete all reps on one side — either way, control the descent',
+                    ],
+                },
+                {
+                    name: 'EZ Bar preacher curl',
+                    sets: '3', reps: '8-10', weight: '10', rest: '60',
+                    muscle: 'Biceps brachii (short head) · Brachialis',
+                    tips: [
+                        'Rest upper arms flat on the angled pad — they must stay in contact throughout',
+                        'Use the inner (angled-in) grips on the EZ bar for a more natural wrist position',
+                        'Lower the bar until arms are almost fully extended — don\'t hyperextend at the bottom',
+                        'Curl up until the bar is near your chin; squeeze biceps hard at the top',
+                        'The preacher pad eliminates cheating, so you must use a lighter weight than a standing curl',
+                    ],
+                },
+                {
+                    name: 'Barbell bicep curl',
+                    sets: '2', reps: '8', weight: '17.5', rest: '60',
+                    muscle: 'Biceps brachii · Brachialis',
+                    tips: [
+                        'Stand with feet shoulder-width, barbell at arms\' length with underhand grip',
+                        'Pin elbows to the sides — they should barely move throughout the set',
+                        'Curl the bar up in a smooth arc, fully contracting the biceps at the top',
+                        'Do not swing the torso or use momentum — if you are, reduce the weight',
+                        'Lower all the way back to full arm extension to hit the full range of motion',
+                    ],
+                },
+                {
+                    name: 'Cable rope triceps extension',
+                    sets: '4', reps: '12', weight: '40', rest: '60',
+                    muscle: 'Triceps (all 3 heads)',
+                    tips: [
+                        'Attach the rope handle; stand facing the cable stack with a slight forward lean',
+                        'Keep elbows pinned at your sides — they should not move at all during the rep',
+                        'As you push down, spread the rope apart at the bottom to maximise the contraction',
+                        'Squeeze the triceps hard at full extension; hold briefly before returning',
+                        'Control the return slowly (2–3 seconds) — the eccentric builds just as much muscle',
+                    ],
+                },
+                {
+                    name: 'Plate weighted dip',
+                    sets: '3', reps: '8-12', weight: 'Body Weight', rest: '60',
+                    muscle: 'Triceps · Lower chest · Front delts',
+                    tips: [
+                        'Attach a plate with a dip belt, or hold between your feet; start with just bodyweight until form is solid',
+                        'For triceps focus: keep torso upright, elbows tucked close to your sides',
+                        'For more chest involvement: lean slightly forward and let elbows flare more',
+                        'Lower until upper arms are at least parallel to the floor — don\'t half-rep',
+                        'Press back up without fully locking out — keep a slight elbow bend at the top to maintain tension',
+                    ],
+                },
+                {
+                    name: 'Cable standing overhead triceps extension',
+                    sets: '3', reps: '15-20', weight: '20', rest: '60',
+                    muscle: 'Triceps long head',
+                    tips: [
+                        'Face away from the cable, set the pulley low; step forward into a stagger stance',
+                        'Raise arms overhead so upper arms are beside your ears — they stay there the whole set',
+                        'Extend fully at the top, locking out and squeezing the triceps',
+                        'Lower slowly until you feel a deep stretch in the triceps behind your head',
+                        'Keep your core braced to avoid lumbar extension as the weight pulls overhead',
+                    ],
+                },
             ],
             notes: [],
         },
@@ -501,6 +935,39 @@
             `${count} of 12 weeks complete — ${pct}%`;
     }
 
+    // ── Form tips modal ───────────────────────────────────────────
+    const overlay   = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(exercise) {
+        document.getElementById('modal-title').textContent  = exercise.name;
+        document.getElementById('modal-muscle').textContent = exercise.muscle;
+
+        const tipsList = document.getElementById('modal-tips');
+        tipsList.innerHTML = '';
+        exercise.tips.forEach(tip => {
+            const li = document.createElement('li');
+            li.textContent = tip;
+            tipsList.appendChild(li);
+        });
+
+        const ytLink = document.getElementById('modal-yt');
+        ytLink.href = 'https://www.youtube.com/results?search_query=' +
+            encodeURIComponent(exercise.name + ' proper form tutorial');
+
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
     // ── Workouts ─────────────────────────────────────────────────
     function buildWorkouts() {
         const container = document.getElementById('workout-container');
@@ -509,7 +976,6 @@
             const dayDoneKey = `workout-${day.id}-done-${today}`;
             const dayDone = localStorage.getItem(dayDoneKey) === 'true';
 
-            // Wrapper
             const wrap = document.createElement('div');
             wrap.className = 'workout-day';
 
@@ -542,7 +1008,6 @@
             const body = document.createElement('div');
             body.className = 'workout-body';
 
-            // Table
             const tableWrap = document.createElement('div');
             tableWrap.className = 'table-wrap';
 
@@ -570,13 +1035,31 @@
                     return inp;
                 };
 
+                // Exercise name cell with info button
                 const tdName = document.createElement('td');
-                tdName.textContent = ex.name;
+                const nameCell = document.createElement('div');
+                nameCell.className = 'ex-name-cell';
 
-                const tdSets = document.createElement('td'); tdSets.appendChild(makeInput('sets', ex.sets));
-                const tdReps = document.createElement('td'); tdReps.appendChild(makeInput('reps', ex.reps));
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = ex.name;
+
+                const infoBtn = document.createElement('button');
+                infoBtn.className = 'info-btn';
+                infoBtn.textContent = 'i';
+                infoBtn.title = 'View form cues';
+                infoBtn.setAttribute('aria-label', `Form tips for ${ex.name}`);
+                infoBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    openModal(ex);
+                });
+
+                nameCell.append(nameSpan, infoBtn);
+                tdName.appendChild(nameCell);
+
+                const tdSets   = document.createElement('td'); tdSets.appendChild(makeInput('sets', ex.sets));
+                const tdReps   = document.createElement('td'); tdReps.appendChild(makeInput('reps', ex.reps));
                 const tdWeight = document.createElement('td'); tdWeight.appendChild(makeInput('weight', ex.weight));
-                const tdRest = document.createElement('td'); tdRest.appendChild(makeInput('rest', ex.rest));
+                const tdRest   = document.createElement('td'); tdRest.appendChild(makeInput('rest', ex.rest));
 
                 tr.append(tdName, tdSets, tdReps, tdWeight, tdRest);
                 tbody.appendChild(tr);
@@ -615,7 +1098,6 @@
             footer.appendChild(btn);
             body.appendChild(footer);
 
-            // Toggle collapse
             header.addEventListener('click', () => {
                 const open = body.classList.toggle('open');
                 chevron.classList.toggle('open', open);
