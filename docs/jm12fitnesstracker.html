@@ -16,10 +16,7 @@
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
         h1 {
             color: #f8fafc;
@@ -49,13 +46,9 @@
             margin: 0 0 16px 0;
             font-size: 1.05em;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        /* ── 12-Week Progress ── */
-
+        /* ── Shared progress bar ── */
         .progress-bar-track {
             background: #0f1117;
             border-radius: 99px;
@@ -64,15 +57,17 @@
             overflow: hidden;
             border: 1px solid #2d3148;
         }
-
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #16a34a, #4ade80);
             border-radius: 99px;
             transition: width 0.4s ease;
-            min-width: 0;
+        }
+        .progress-bar-fill.over-goal {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
         }
 
+        /* ── 12-Week Progress ── */
         .progress-text {
             text-align: center;
             color: #4ade80;
@@ -80,17 +75,12 @@
             font-weight: 600;
             margin-bottom: 16px;
         }
-
         .weeks-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 8px;
         }
-
-        @media (max-width: 480px) {
-            .weeks-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
+        @media (max-width: 480px) { .weeks-grid { grid-template-columns: repeat(4, 1fr); } }
         .week-tile {
             aspect-ratio: 1;
             border-radius: 10px;
@@ -108,31 +98,67 @@
             user-select: none;
             gap: 2px;
         }
-
         .week-tile:hover { border-color: #4ade80; color: #4ade80; }
+        .week-tile.done { background: #14532d; border-color: #4ade80; color: #4ade80; }
+        .week-tile .check-mark { font-size: 1.1em; line-height: 1; }
 
-        .week-tile.done {
-            background: #14532d;
-            border-color: #4ade80;
-            color: #4ade80;
+        /* ── Nutrition summary ── */
+        .nutrition-summary {
+            background: #161928;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #2d3148;
         }
-
-        .week-tile .check-mark {
-            font-size: 1.1em;
+        .kcal-row {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .kcal-current {
+            font-size: 2em;
+            font-weight: 800;
+            color: #f8fafc;
             line-height: 1;
         }
-
-        /* ── Meal List ── */
-
-        .date-badge {
-            font-size: 0.78em;
-            color: #64748b;
-            margin-bottom: 12px;
+        .kcal-sep { color: #475569; font-size: 1.1em; }
+        .kcal-goal-val { font-size: 1.05em; color: #94a3b8; }
+        .kcal-unit { font-size: 0.82em; color: #64748b; }
+        .kcal-pct { margin-left: auto; font-size: 0.82em; color: #64748b; }
+        .macro-bars { margin: 12px 0 10px; display: flex; flex-direction: column; gap: 7px; }
+        .macro-row { display: flex; align-items: center; gap: 8px; font-size: 0.8em; }
+        .macro-label { width: 52px; color: #94a3b8; flex-shrink: 0; font-weight: 600; }
+        .macro-bar-track { flex: 1; height: 6px; background: #0f1117; border-radius: 99px; overflow: hidden; }
+        .macro-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+        .macro-protein { background: #60a5fa; }
+        .macro-carbs   { background: #f59e0b; }
+        .macro-fat     { background: #f87171; }
+        .macro-value   { width: 80px; text-align: right; color: #64748b; flex-shrink: 0; white-space: nowrap; }
+        .goals-toggle-row { text-align: right; margin-top: 6px; }
+        .btn-goals-toggle {
+            background: none; border: none; color: #475569;
+            font-size: 0.78em; cursor: pointer; padding: 2px 0; transition: color 0.15s;
         }
+        .btn-goals-toggle:hover { color: #7dd3fc; }
+        .goals-editor { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #2d3148; }
+        .goals-editor.open { display: block; }
+        .goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .goal-field label { display: block; font-size: 0.75em; color: #64748b; margin-bottom: 4px; font-weight: 600; }
+        .goal-field input {
+            width: 100%; padding: 6px 10px; background: #0f1117;
+            border: 1px solid #2d3148; border-radius: 8px;
+            color: #e2e8f0; font-size: 0.9em; transition: border-color 0.15s;
+        }
+        .goal-field input:focus { outline: none; border-color: #7dd3fc; }
+        .goals-note { font-size: 0.72em; color: #475569; text-align: right; margin-top: 8px; }
 
+        /* ── Meal items ── */
+        .date-badge { font-size: 0.78em; color: #64748b; margin-bottom: 12px; }
+        .approx-note { font-size: 0.72em; color: #475569; font-style: italic; margin: -6px 0 14px; }
         .meal-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             padding: 11px 14px;
             border-radius: 10px;
             margin-bottom: 8px;
@@ -143,356 +169,179 @@
             user-select: none;
             gap: 12px;
         }
-
         .meal-item:hover { border-color: #7dd3fc; }
-
-        .meal-item.done {
-            background: #0d1a0d;
-            border-color: #14532d;
-        }
-
-        .meal-item.done .meal-text {
-            text-decoration: line-through;
-            color: #475569;
-        }
-
+        .meal-item.done { background: #0d1a0d; border-color: #14532d; }
+        .meal-item.done .meal-text { text-decoration: line-through; color: #475569; }
+        .meal-item.done .meal-meta { opacity: 0.4; }
         .meal-circle {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #334155;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8em;
-            transition: all 0.15s;
-            color: transparent;
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 2px solid #334155; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8em; transition: all 0.15s; color: transparent; margin-top: 1px;
         }
+        .meal-item.done .meal-circle { background: #16a34a; border-color: #16a34a; color: white; }
+        .meal-content { flex: 1; min-width: 0; }
+        .meal-text { font-size: 0.9em; color: #cbd5e1; transition: all 0.15s; display: block; margin-bottom: 5px; }
+        .meal-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.75em; }
+        .meal-tag-kcal { color: #fbbf24; font-weight: 600; }
+        .meal-tag-p    { color: #60a5fa; }
+        .meal-tag-c    { color: #f59e0b; }
+        .meal-tag-f    { color: #f87171; }
 
-        .meal-item.done .meal-circle {
-            background: #16a34a;
-            border-color: #16a34a;
-            color: white;
+        /* ── Custom food log ── */
+        .section-label {
+            font-size: 0.75em; font-weight: 700; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.08em; margin: 18px 0 10px;
         }
-
-        .meal-text {
-            font-size: 0.9em;
-            color: #cbd5e1;
-            transition: all 0.15s;
+        .custom-food-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; border-radius: 8px;
+            background: #161928; border: 1px solid #2d3148;
+            margin-bottom: 6px; font-size: 0.85em;
         }
-
-        /* ── Workout Sections ── */
-
-        .workout-day {
-            margin-bottom: 12px;
-            border: 1px solid #2d3148;
-            border-radius: 10px;
-            overflow: hidden;
+        .custom-food-name { flex: 1; color: #cbd5e1; }
+        .custom-food-kcal { color: #fbbf24; font-weight: 600; white-space: nowrap; }
+        .custom-food-macros { color: #475569; font-size: 0.82em; white-space: nowrap; }
+        .btn-remove-food {
+            background: none; border: none; color: #475569;
+            cursor: pointer; font-size: 1.1em; padding: 0 0 0 4px;
+            transition: color 0.15s; line-height: 1; flex-shrink: 0;
         }
+        .btn-remove-food:hover { color: #ef4444; }
+        .empty-custom { color: #475569; font-size: 0.82em; font-style: italic; text-align: center; padding: 4px 0 12px; }
+        .add-food-form {
+            background: #161928; border: 1px solid #2d3148;
+            border-radius: 10px; padding: 12px;
+        }
+        .food-input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .food-input-row input, .food-macros-row input {
+            flex: 1; min-width: 70px; padding: 7px 10px;
+            background: #0f1117; border: 1px solid #2d3148;
+            border-radius: 8px; color: #e2e8f0;
+            font-size: 0.85em; transition: border-color 0.15s;
+        }
+        .food-input-row input:focus, .food-macros-row input:focus { outline: none; border-color: #7dd3fc; }
+        .food-name-input { flex: 2 !important; min-width: 130px !important; }
+        .food-macros-row { display: none; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .food-macros-row.open { display: flex; }
+        .food-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .btn-macro-toggle {
+            background: none; border: none; color: #475569;
+            font-size: 0.78em; cursor: pointer; padding: 0; transition: color 0.15s;
+        }
+        .btn-macro-toggle:hover { color: #7dd3fc; }
+        .btn-add-food {
+            padding: 7px 16px; background: #0f3460;
+            border: 1px solid #7dd3fc; border-radius: 8px;
+            color: #7dd3fc; font-size: 0.83em; font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .btn-add-food:hover { background: #1a4a7a; }
 
+        /* ── Workout sections ── */
+        .workout-day { margin-bottom: 12px; border: 1px solid #2d3148; border-radius: 10px; overflow: hidden; }
         .workout-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #161928;
-            cursor: pointer;
-            user-select: none;
-            gap: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; background: #161928;
+            cursor: pointer; user-select: none; gap: 10px;
         }
-
         .workout-header:hover { background: #1a1f35; }
-
-        .workout-header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .workout-title {
-            font-size: 0.92em;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
+        .workout-header-left { display: flex; align-items: center; gap: 10px; }
+        .workout-title { font-size: 0.92em; font-weight: 600; color: #e2e8f0; }
         .workout-done-badge {
-            font-size: 0.72em;
-            background: #14532d;
-            color: #4ade80;
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-weight: 600;
+            font-size: 0.72em; background: #14532d; color: #4ade80;
+            padding: 2px 8px; border-radius: 99px; font-weight: 600;
         }
-
-        .chevron {
-            color: #475569;
-            font-size: 0.75em;
-            transition: transform 0.2s;
-        }
-
+        .chevron { color: #475569; font-size: 0.75em; transition: transform 0.2s; }
         .chevron.open { transform: rotate(90deg); }
-
-        .workout-body {
-            display: none;
-            padding: 0 0 12px;
-        }
-
+        .workout-body { display: none; padding: 0 0 12px; }
         .workout-body.open { display: block; }
-
-        .table-wrap {
-            overflow-x: auto;
-            padding: 12px 16px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.84em;
-        }
-
+        .table-wrap { overflow-x: auto; padding: 12px 16px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.84em; }
         thead th {
-            background: #0f1117;
-            color: #7dd3fc;
-            padding: 8px 10px;
-            text-align: left;
-            font-weight: 600;
-            white-space: nowrap;
+            background: #0f1117; color: #7dd3fc;
+            padding: 8px 10px; text-align: left; font-weight: 600; white-space: nowrap;
         }
-
-        tbody td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #1e2130;
-            vertical-align: middle;
-            color: #cbd5e1;
-        }
-
+        tbody td { padding: 8px 10px; border-bottom: 1px solid #1e2130; vertical-align: middle; color: #cbd5e1; }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: #1a1f35; }
-
-        .ex-name-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .ex-name-cell { display: flex; align-items: center; gap: 8px; }
         .info-btn {
-            flex-shrink: 0;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 1px solid #334155;
-            background: transparent;
-            color: #64748b;
-            font-size: 0.72em;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            line-height: 1;
-            padding: 0;
+            flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+            border: 1px solid #334155; background: transparent;
+            color: #64748b; font-size: 0.72em; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; line-height: 1; padding: 0;
         }
-
-        .info-btn:hover {
-            border-color: #7dd3fc;
-            color: #7dd3fc;
-            background: #0f1117;
-        }
-
+        .info-btn:hover { border-color: #7dd3fc; color: #7dd3fc; background: #0f1117; }
         .ex-input {
-            width: 68px;
-            padding: 4px 6px;
-            background: #0f1117;
-            border: 1px solid #2d3148;
-            border-radius: 6px;
-            color: #e2e8f0;
-            font-size: 0.9em;
-            text-align: center;
-            transition: border-color 0.15s;
+            width: 68px; padding: 4px 6px; background: #0f1117;
+            border: 1px solid #2d3148; border-radius: 6px;
+            color: #e2e8f0; font-size: 0.9em; text-align: center; transition: border-color 0.15s;
         }
-
-        .ex-input:focus {
-            outline: none;
-            border-color: #7dd3fc;
-        }
-
-        .info-row td {
-            color: #f59e0b;
-            font-size: 0.82em;
-            font-style: italic;
-            background: #1a1505;
-        }
-
-        .workout-footer {
-            padding: 10px 16px 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .ex-input:focus { outline: none; border-color: #7dd3fc; }
+        .info-row td { color: #f59e0b; font-size: 0.82em; font-style: italic; background: #1a1505; }
+        .workout-footer { padding: 10px 16px 2px; display: flex; align-items: center; gap: 10px; }
         .btn-complete {
-            padding: 6px 14px;
-            background: #161928;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 0.82em;
-            font-weight: 600;
-            transition: all 0.15s;
+            padding: 6px 14px; background: #161928; border: 1px solid #334155;
+            border-radius: 8px; color: #94a3b8; cursor: pointer;
+            font-size: 0.82em; font-weight: 600; transition: all 0.15s;
         }
+        .btn-complete:hover { border-color: #4ade80; color: #4ade80; }
+        .btn-complete.active { background: #14532d; border-color: #4ade80; color: #4ade80; }
 
-        .btn-complete:hover {
-            border-color: #4ade80;
-            color: #4ade80;
-        }
-
-        .btn-complete.active {
-            background: #14532d;
-            border-color: #4ade80;
-            color: #4ade80;
-        }
-
-        /* ── Form Tips Modal ── */
-
+        /* ── Form tips modal ── */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75); z-index: 100;
+            align-items: center; justify-content: center; padding: 16px;
         }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
+        .modal-overlay.open { display: flex; }
         .modal {
-            background: #1e2130;
-            border: 1px solid #2d3148;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 480px;
-            padding: 24px;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
+            background: #1e2130; border: 1px solid #2d3148; border-radius: 16px;
+            width: 100%; max-width: 480px; padding: 24px;
+            position: relative; max-height: 90vh; overflow-y: auto;
         }
-
         .modal-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: #64748b;
-            font-size: 1.3em;
-            cursor: pointer;
-            line-height: 1;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: color 0.15s;
+            position: absolute; top: 14px; right: 16px; background: none; border: none;
+            color: #64748b; font-size: 1.3em; cursor: pointer; padding: 2px 6px;
+            border-radius: 6px; transition: color 0.15s;
         }
-
         .modal-close:hover { color: #e2e8f0; }
-
-        .modal-exercise-name {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #f8fafc;
-            margin: 0 28px 4px 0;
-        }
-
+        .modal-exercise-name { font-size: 1.1em; font-weight: 700; color: #f8fafc; margin: 0 28px 4px 0; }
         .modal-muscle-tag {
-            display: inline-block;
-            font-size: 0.72em;
-            background: #0f3460;
-            color: #7dd3fc;
-            padding: 2px 10px;
-            border-radius: 99px;
-            margin-bottom: 16px;
-            font-weight: 600;
+            display: inline-block; font-size: 0.72em; background: #0f3460;
+            color: #7dd3fc; padding: 2px 10px; border-radius: 99px;
+            margin-bottom: 16px; font-weight: 600;
         }
-
         .modal-tips-heading {
-            font-size: 0.75em;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 10px;
+            font-size: 0.75em; font-weight: 700; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
         }
-
-        .modal-tips {
-            list-style: none;
-            margin: 0 0 20px;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .modal-tips li {
-            display: flex;
-            gap: 10px;
-            font-size: 0.88em;
-            color: #cbd5e1;
-            line-height: 1.45;
-        }
-
-        .modal-tips li::before {
-            content: '→';
-            color: #7dd3fc;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
+        .modal-tips { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+        .modal-tips li { display: flex; gap: 10px; font-size: 0.88em; color: #cbd5e1; line-height: 1.45; }
+        .modal-tips li::before { content: '→'; color: #7dd3fc; flex-shrink: 0; margin-top: 1px; }
         .modal-yt-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 10px;
-            background: #1e0a0a;
-            border: 1px solid #7f1d1d;
-            border-radius: 10px;
-            color: #fca5a5;
-            font-size: 0.85em;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 10px; background: #1e0a0a;
+            border: 1px solid #7f1d1d; border-radius: 10px;
+            color: #fca5a5; font-size: 0.85em; font-weight: 600;
+            cursor: pointer; text-decoration: none; transition: all 0.15s;
         }
-
-        .modal-yt-btn:hover {
-            background: #3b0f0f;
-            border-color: #ef4444;
-            color: #fecaca;
-        }
-
-        .yt-icon {
-            font-size: 1.1em;
-        }
+        .modal-yt-btn:hover { background: #3b0f0f; border-color: #ef4444; color: #fecaca; }
     </style>
 </head>
 <body>
 
-<!-- Form tips modal -->
 <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="modal">
-        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+        <button class="modal-close" id="modal-close">✕</button>
         <div class="modal-exercise-name" id="modal-title"></div>
         <div class="modal-muscle-tag" id="modal-muscle"></div>
         <div class="modal-tips-heading">Key form cues</div>
         <ul class="modal-tips" id="modal-tips"></ul>
         <a class="modal-yt-btn" id="modal-yt" target="_blank" rel="noopener noreferrer">
-            <span class="yt-icon">▶</span> Search YouTube for form tutorial
+            <span>▶</span> Search YouTube for form tutorial
         </a>
     </div>
 </div>
@@ -501,7 +350,6 @@
     <h1>12-Week Transformation Tracker</h1>
     <div class="subtitle" id="today-label"></div>
 
-    <!-- 12-Week Progress -->
     <div class="card">
         <div class="card-title">📅 12-Week Progress</div>
         <div class="progress-bar-track">
@@ -511,14 +359,15 @@
         <div class="weeks-grid" id="weeks-grid"></div>
     </div>
 
-    <!-- Daily Nutrition -->
     <div class="card">
         <div class="card-title">🍎 Daily Nutrition</div>
         <div class="date-badge" id="meal-date-badge"></div>
+        <div id="nutrition-summary"></div>
+        <div class="approx-note">* Preset meal calories are estimates based on typical serving sizes</div>
         <div id="meal-list"></div>
+        <div id="custom-food-log"></div>
     </div>
 
-    <!-- Workouts -->
     <div class="card">
         <div class="card-title">🏋️ Weekly Workout Plan</div>
         <div id="workout-container"></div>
@@ -530,345 +379,144 @@
 
     document.getElementById('today-label').textContent =
         new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
     document.getElementById('meal-date-badge').textContent =
-        'Tracking meals for ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+        'Tracking for ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // ── Workout data ──────────────────────────────────────────────
-    const workoutDays = [
-        {
-            id: 'mon',
-            label: 'Monday (Day 1) — Chest & Triceps',
-            exercises: [
-                {
-                    name: 'Dumbbell Incline bench press',
-                    sets: '4', reps: '8-10', weight: '12.5', rest: '90',
-                    muscle: 'Upper chest · Front delts',
-                    tips: [
-                        'Set bench to 30–45° — any higher shifts work to delts, any lower to mid chest',
-                        'Retract and depress shoulder blades before unracking and keep them pinched throughout',
-                        'Lower dumbbells to upper chest level, elbows at ~75° from torso (not flared to 90°)',
-                        'Press up and slightly inward — don\'t fully lock out elbows at the top',
-                        'Keep wrists stacked over elbows; avoid letting them bend back',
-                    ],
-                },
-                {
-                    name: 'Dumbbell standing shoulder press',
-                    sets: '4', reps: '6-8', weight: '12.5', rest: '90',
-                    muscle: 'Front & side delts · Triceps',
-                    tips: [
-                        'Start with dumbbells at shoulder height, palms facing forward or slightly inward',
-                        'Brace your core hard — standing means no back support; avoid excessive lumbar arch',
-                        'Press straight overhead, bringing dumbbells close together at the top',
-                        'Lower under full control back to shoulder height for each rep',
-                        'Don\'t use leg drive — if you\'re having to push off your legs, the weight is too heavy',
-                    ],
-                },
-                {
-                    name: 'Cable bent over chest fly',
-                    sets: '3', reps: '10-12', weight: '40', rest: '90',
-                    muscle: 'Mid chest · Front delts',
-                    tips: [
-                        'Set cables at shoulder height; hinge forward at the hips about 30–45°, slight knee bend',
-                        'Hold handles with a very slight bend in the elbows — keep that angle fixed throughout',
-                        'Drive the movement by squeezing your chest, not by bending or straightening the elbows',
-                        'Bring hands together in front of your chest, thumbs nearly touching at the peak',
-                        'Control the eccentric — don\'t let the cables yank your arms back',
-                    ],
-                },
-                {
-                    name: 'Cuffed lateral raises',
-                    sets: '3', reps: '15-20', weight: '15', rest: '90',
-                    muscle: 'Side delts',
-                    tips: [
-                        'Lead with your elbows, not your hands — imagine pouring a jug of water out to the side',
-                        'Raise to shoulder height only; going higher recruits traps and loses side delt tension',
-                        'Keep a very slight elbow bend (about 10–15°) and maintain it the whole set',
-                        'Don\'t shrug your shoulders — if you are, the weight is too heavy',
-                        'Lower slowly (2–3 seconds) — the eccentric is where a lot of the work happens',
-                    ],
-                },
-                {
-                    name: 'Cable straight bar triceps pushdown',
-                    sets: '3', reps: '12-15', weight: '40', rest: '90',
-                    muscle: 'Triceps (all 3 heads)',
-                    tips: [
-                        'Stand close to the cable stack, lean very slightly forward at the hips',
-                        'Pin elbows tightly to your sides — they must not move; they\'re the pivot point',
-                        'Push down until arms are fully extended and squeeze the triceps hard',
-                        'Control the bar on the way back up — stop before elbows rise above 90°',
-                        'Avoid using your lats to initiate the push; the movement should be forearm-only',
-                    ],
-                },
-                {
-                    name: 'Cable standing overhead triceps extension',
-                    sets: '3', reps: '15-20', weight: '20', rest: '90',
-                    muscle: 'Triceps long head',
-                    tips: [
-                        'Face away from the cable, set the pulley low; step forward into a stagger stance',
-                        'Raise arms overhead so upper arms are beside your ears — they stay there the whole set',
-                        'Extend fully at the top, locking out and squeezing the triceps',
-                        'Lower slowly until you feel a deep stretch in the triceps behind your head',
-                        'Keep your core braced to avoid lumbar extension as the weight pulls overhead',
-                    ],
-                },
-            ],
-            notes: ['Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s'],
-        },
-        {
-            id: 'wed',
-            label: 'Wednesday (Day 3) — Back & Biceps',
-            exercises: [
-                {
-                    name: 'Lat Machine wide grip pulldown',
-                    sets: '4', reps: '10-12', weight: '50', rest: '90',
-                    muscle: 'Lats · Rear delts · Biceps',
-                    tips: [
-                        'Grip the bar wider than shoulder width; lean back slightly (about 10–15°) and stay there',
-                        'Initiate by depressing the shoulder blades first — imagine tucking them into your back pockets',
-                        'Drive your elbows down and back toward your hips, not just backward',
-                        'Pull bar to your upper chest; pause and squeeze the lats at the bottom',
-                        'Let the bar rise under control — don\'t let your shoulder blades wing up at the top',
-                    ],
-                },
-                {
-                    name: 'Barbell bent over row',
-                    sets: '4', reps: '5-8', weight: '40', rest: '90',
-                    muscle: 'Lats · Mid-back · Rear delts · Biceps',
-                    tips: [
-                        'Hinge at hips until torso is about 45° to horizontal; soft knee bend, back flat',
-                        'Pull bar to your lower chest/upper abdomen — higher than that = more upper back, lower = more lats',
-                        'Drive the elbows up and back, squeezing shoulder blades together at the top',
-                        'Keep the bar close to your body throughout the pull — no swinging',
-                        'Brace core and avoid rounding the lower back; if you are, reduce weight',
-                    ],
-                },
-                {
-                    name: 'Cable seated row',
-                    sets: '4', reps: '10-12', weight: '35', rest: '90',
-                    muscle: 'Mid-back · Lats · Rhomboids',
-                    tips: [
-                        'Sit tall with a very slight lean forward at the start; don\'t collapse the chest',
-                        'Pull the handle to your lower chest/abdomen, driving elbows back past your torso',
-                        'At the peak contraction, squeeze your shoulder blades together for a 1-second hold',
-                        'Let the cable pull your arms back out under control — don\'t let your upper body fall forward',
-                        'The torso should be roughly upright; avoid excessive forward and backward rocking',
-                    ],
-                },
-                {
-                    name: 'Barbell shrug',
-                    sets: '2', reps: '12-15', weight: '30', rest: '90',
-                    muscle: 'Traps (upper)',
-                    tips: [
-                        'Hold the bar at hip level with an overhand grip, arms straight',
-                        'Shrug straight up — think "shoulders to ears", NOT rolling the shoulders forward or back',
-                        'Hold the contracted position for 1–2 seconds to fully engage the upper traps',
-                        'Lower slowly and fully to get a complete stretch at the bottom',
-                        'Keep your neck neutral — don\'t jut your head forward or tuck your chin',
-                    ],
-                },
-                {
-                    name: 'Barbell bicep curl',
-                    sets: '3', reps: '10-15', weight: '15', rest: '90',
-                    muscle: 'Biceps brachii · Brachialis',
-                    tips: [
-                        'Stand with feet shoulder-width, barbell at arms\' length with underhand grip',
-                        'Pin elbows to the sides — they should barely move throughout the set',
-                        'Curl the bar up in a smooth arc, fully contracting the biceps at the top',
-                        'Do not swing the torso or use momentum — if you are, reduce the weight',
-                        'Lower all the way back to full arm extension to hit the full range of motion',
-                    ],
-                },
-                {
-                    name: 'Cable single arm bicep curl',
-                    sets: '2', reps: '15-20', weight: '20', rest: '90',
-                    muscle: 'Biceps brachii',
-                    tips: [
-                        'Stand side-on or facing the cable, set pulley to low; hold the handle underhand',
-                        'Keep your upper arm stationary — elbow stays at your side throughout',
-                        'Curl fully until your palm faces your shoulder, then squeeze for 1 second',
-                        'Lower slowly under control — the cable provides continuous tension through the eccentric',
-                        'Do all reps on one side before switching; avoid twisting the torso to help',
-                    ],
-                },
-            ],
-            notes: [],
-        },
-        {
-            id: 'fri',
-            label: 'Friday (Day 5) — Legs & Abs + Cardio',
-            exercises: [
-                {
-                    name: 'Machine seated leg curl',
-                    sets: '3', reps: '10-15', weight: '45', rest: '90',
-                    muscle: 'Hamstrings',
-                    tips: [
-                        'Adjust the machine so the pivot aligns exactly with your knee joint',
-                        'Sit tall (or lie prone); keep your hips pressed firmly into the seat/pad throughout',
-                        'Curl until your hamstrings are fully contracted — aim to get your heels toward your glutes',
-                        'Pause and squeeze at the top, then lower over 2–3 seconds — no letting it drop',
-                        'Point toes slightly toward shins (dorsiflexed) to increase hamstring activation',
-                    ],
-                },
-                {
-                    name: 'Hack Squats',
-                    sets: '3', reps: '10-15', weight: '55', rest: '90',
-                    muscle: 'Quads · Glutes · Hamstrings',
-                    tips: [
-                        'Place feet shoulder-width or slightly wider; toes angled out 15–30°',
-                        'Keep lower back firmly pressed into the pad throughout the movement',
-                        'Lower until thighs are parallel to the platform or below — full depth hits quads more',
-                        'Drive through the full foot (not just heels) and press your knees out in line with your toes',
-                        'Don\'t lock out the knees fully at the top — keep a slight bend to maintain tension',
-                    ],
-                },
-                {
-                    name: 'Seated leg press',
-                    sets: '4', reps: '15-20', weight: '55', rest: '90',
-                    muscle: 'Quads · Glutes · Hamstrings',
-                    tips: [
-                        'Place feet hip-width apart in the middle to upper portion of the platform',
-                        'Lower until knees are around 90° — stop before lower back rounds off the seat',
-                        'Drive through the whole foot, pushing knees out wide in line with your toes',
-                        'Do not lock out the knees at the top; keep a slight bend to protect the joint and maintain tension',
-                        'Keep lower back and glutes in contact with the seat throughout',
-                    ],
-                },
-                {
-                    name: 'Barbell romanian deadlift',
-                    sets: '2', reps: '10-15', weight: '20', rest: '90',
-                    muscle: 'Hamstrings · Glutes · Lower back',
-                    tips: [
-                        'Start standing with bar at hip height, overhand grip just outside your hips',
-                        'Push hips back as you lower the bar — this is a hip hinge, not a squat',
-                        'Maintain a slight knee bend (soft knees), back flat and neutral throughout',
-                        'Lower until you feel a strong hamstring stretch — typically just below the knee',
-                        'Drive hips forward to return to standing; squeeze glutes hard at the top',
-                    ],
-                },
-                {
-                    name: 'Machine seated calf raise',
-                    sets: '4', reps: '10-15', weight: '30', rest: '90',
-                    muscle: 'Soleus · Gastrocnemius',
-                    tips: [
-                        'Place the balls of your feet on the edge of the footplate — heels hanging off',
-                        'Lower your heels as far as possible to get a full stretch at the bottom',
-                        'Press up onto the balls of your feet as high as possible; pause and squeeze at the top',
-                        'No bouncing at the bottom — pausing at the stretched position prevents this',
-                        'Go slow on the way down (3 seconds); calves respond well to slow eccentrics',
-                    ],
-                },
-                {
-                    name: 'Dumbbell walking lunge',
-                    sets: '1', reps: 'Until Failure', weight: '10', rest: '-',
-                    muscle: 'Quads · Glutes · Hamstrings',
-                    tips: [
-                        'Hold dumbbells at your sides, stand tall with core braced',
-                        'Step forward and lower your back knee toward the floor — aim for ~1" above ground',
-                        'Front shin should stay roughly vertical; knee tracks over the second toe',
-                        'Push through your front heel and step through, bringing feet together briefly',
-                        'Keep your torso upright throughout — don\'t lean forward over the front knee',
-                    ],
-                },
-            ],
-            notes: [
-                'Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s',
-                '30 min Cardio — bike, jog, swim, etc.',
-            ],
-        },
-        {
-            id: 'sat',
-            label: 'Saturday (Day 6) — Arms Focus',
-            exercises: [
-                {
-                    name: 'Crossbody hammer curls',
-                    sets: '3', reps: '10-15', weight: '10', rest: '60',
-                    muscle: 'Brachialis · Brachioradialis · Biceps',
-                    tips: [
-                        'Hold dumbbells with a neutral (hammer) grip — thumbs facing up throughout',
-                        'Curl one dumbbell across your body toward the opposite shoulder',
-                        'Keep your upper arm stationary; only the forearm moves',
-                        'The crossbody angle targets the brachialis more than a standard curl',
-                        'Alternate arms or complete all reps on one side — either way, control the descent',
-                    ],
-                },
-                {
-                    name: 'EZ Bar preacher curl',
-                    sets: '3', reps: '8-10', weight: '10', rest: '60',
-                    muscle: 'Biceps brachii (short head) · Brachialis',
-                    tips: [
-                        'Rest upper arms flat on the angled pad — they must stay in contact throughout',
-                        'Use the inner (angled-in) grips on the EZ bar for a more natural wrist position',
-                        'Lower the bar until arms are almost fully extended — don\'t hyperextend at the bottom',
-                        'Curl up until the bar is near your chin; squeeze biceps hard at the top',
-                        'The preacher pad eliminates cheating, so you must use a lighter weight than a standing curl',
-                    ],
-                },
-                {
-                    name: 'Barbell bicep curl',
-                    sets: '2', reps: '8', weight: '17.5', rest: '60',
-                    muscle: 'Biceps brachii · Brachialis',
-                    tips: [
-                        'Stand with feet shoulder-width, barbell at arms\' length with underhand grip',
-                        'Pin elbows to the sides — they should barely move throughout the set',
-                        'Curl the bar up in a smooth arc, fully contracting the biceps at the top',
-                        'Do not swing the torso or use momentum — if you are, reduce the weight',
-                        'Lower all the way back to full arm extension to hit the full range of motion',
-                    ],
-                },
-                {
-                    name: 'Cable rope triceps extension',
-                    sets: '4', reps: '12', weight: '40', rest: '60',
-                    muscle: 'Triceps (all 3 heads)',
-                    tips: [
-                        'Attach the rope handle; stand facing the cable stack with a slight forward lean',
-                        'Keep elbows pinned at your sides — they should not move at all during the rep',
-                        'As you push down, spread the rope apart at the bottom to maximise the contraction',
-                        'Squeeze the triceps hard at full extension; hold briefly before returning',
-                        'Control the return slowly (2–3 seconds) — the eccentric builds just as much muscle',
-                    ],
-                },
-                {
-                    name: 'Plate weighted dip',
-                    sets: '3', reps: '8-12', weight: 'Body Weight', rest: '60',
-                    muscle: 'Triceps · Lower chest · Front delts',
-                    tips: [
-                        'Attach a plate with a dip belt, or hold between your feet; start with just bodyweight until form is solid',
-                        'For triceps focus: keep torso upright, elbows tucked close to your sides',
-                        'For more chest involvement: lean slightly forward and let elbows flare more',
-                        'Lower until upper arms are at least parallel to the floor — don\'t half-rep',
-                        'Press back up without fully locking out — keep a slight elbow bend at the top to maintain tension',
-                    ],
-                },
-                {
-                    name: 'Cable standing overhead triceps extension',
-                    sets: '3', reps: '15-20', weight: '20', rest: '60',
-                    muscle: 'Triceps long head',
-                    tips: [
-                        'Face away from the cable, set the pulley low; step forward into a stagger stance',
-                        'Raise arms overhead so upper arms are beside your ears — they stay there the whole set',
-                        'Extend fully at the top, locking out and squeezing the triceps',
-                        'Lower slowly until you feel a deep stretch in the triceps behind your head',
-                        'Keep your core braced to avoid lumbar extension as the weight pulls overhead',
-                    ],
-                },
-            ],
-            notes: [],
-        },
-    ];
-
-    // ── Meals ─────────────────────────────────────────────────────
+    // ── Meals data ────────────────────────────────────────────────
     const meals = [
-        'Meal 1: Sourdough, Cheese, Eggs, Banana',
-        'Meal 2: Chicken, Rice, Veg, Olive Oil',
-        'Meal 3: Pork Mince, Potatoes, Asparagus / Green Veg, Olive Oil',
-        'Meal 4: Oats, Whey Protein, Chocolate, Blueberries',
+        { name: 'Meal 1: Sourdough, Cheese, Eggs, Banana',                      kcal: 530, protein: 26, carbs: 52, fat: 17 },
+        { name: 'Meal 2: Chicken, Rice, Veg, Olive Oil',                         kcal: 520, protein: 37, carbs: 50, fat: 18 },
+        { name: 'Meal 3: Pork Mince, Potatoes, Asparagus / Green Veg, Olive Oil', kcal: 570, protein: 31, carbs: 42, fat: 32 },
+        { name: 'Meal 4: Oats, Whey Protein, Chocolate, Blueberries',            kcal: 580, protein: 38, carbs: 81, fat: 15 },
     ];
 
+    // ── Goals ─────────────────────────────────────────────────────
+    function getGoals() {
+        return {
+            kcal:    parseInt(localStorage.getItem('goal-kcal')    || '2400'),
+            protein: parseInt(localStorage.getItem('goal-protein') || '150'),
+            carbs:   parseInt(localStorage.getItem('goal-carbs')   || '250'),
+            fat:     parseInt(localStorage.getItem('goal-fat')     || '80'),
+        };
+    }
+
+    // ── Custom foods ──────────────────────────────────────────────
+    function getCustomFoods() {
+        try { return JSON.parse(localStorage.getItem(`custom-foods-${today}`) || '[]'); }
+        catch { return []; }
+    }
+    function saveCustomFoods(foods) {
+        localStorage.setItem(`custom-foods-${today}`, JSON.stringify(foods));
+    }
+
+    // ── Totals ────────────────────────────────────────────────────
+    function getTotals() {
+        const t = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+        meals.forEach((meal, i) => {
+            if (localStorage.getItem(`meal-${today}-${i}`) === 'true') {
+                t.kcal += meal.kcal; t.protein += meal.protein;
+                t.carbs += meal.carbs; t.fat += meal.fat;
+            }
+        });
+        getCustomFoods().forEach(f => {
+            t.kcal += f.kcal || 0; t.protein += f.protein || 0;
+            t.carbs += f.carbs || 0; t.fat += f.fat || 0;
+        });
+        return t;
+    }
+
+    // ── Update summary display ────────────────────────────────────
+    function updateSummary() {
+        const totals = getTotals();
+        const goals  = getGoals();
+
+        const kcalPct = Math.min(100, Math.round((totals.kcal / goals.kcal) * 100));
+        const over    = totals.kcal > goals.kcal;
+
+        const el = id => document.getElementById(id);
+        if (!el('kcal-current')) return;
+
+        el('kcal-current').textContent  = totals.kcal.toLocaleString();
+        el('kcal-goal-val').textContent = goals.kcal.toLocaleString();
+        el('kcal-pct').textContent      = kcalPct + '%';
+        el('kcal-fill').style.width     = kcalPct + '%';
+        el('kcal-fill').classList.toggle('over-goal', over);
+
+        ['protein', 'carbs', 'fat'].forEach(m => {
+            const pct = Math.min(100, Math.round((totals[m] / goals[m]) * 100));
+            el(`${m}-fill`).style.width = pct + '%';
+            el(`${m}-val`).textContent  = `${totals[m]} / ${goals[m]}g`;
+        });
+    }
+
+    // ── Build nutrition summary ───────────────────────────────────
+    function buildNutritionSummary() {
+        const g = getGoals();
+        document.getElementById('nutrition-summary').innerHTML = `
+            <div class="nutrition-summary">
+                <div class="kcal-row">
+                    <span class="kcal-current" id="kcal-current">0</span>
+                    <span class="kcal-sep">/</span>
+                    <span class="kcal-goal-val" id="kcal-goal-val">${g.kcal.toLocaleString()}</span>
+                    <span class="kcal-unit">kcal today</span>
+                    <span class="kcal-pct" id="kcal-pct">0%</span>
+                </div>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="kcal-fill" style="width:0%"></div>
+                </div>
+                <div class="macro-bars">
+                    <div class="macro-row">
+                        <span class="macro-label">Protein</span>
+                        <div class="macro-bar-track"><div class="macro-bar-fill macro-protein" id="protein-fill" style="width:0%"></div></div>
+                        <span class="macro-value" id="protein-val">0 / ${g.protein}g</span>
+                    </div>
+                    <div class="macro-row">
+                        <span class="macro-label">Carbs</span>
+                        <div class="macro-bar-track"><div class="macro-bar-fill macro-carbs" id="carbs-fill" style="width:0%"></div></div>
+                        <span class="macro-value" id="carbs-val">0 / ${g.carbs}g</span>
+                    </div>
+                    <div class="macro-row">
+                        <span class="macro-label">Fat</span>
+                        <div class="macro-bar-track"><div class="macro-bar-fill macro-fat" id="fat-fill" style="width:0%"></div></div>
+                        <span class="macro-value" id="fat-val">0 / ${g.fat}g</span>
+                    </div>
+                </div>
+                <div class="goals-toggle-row">
+                    <button class="btn-goals-toggle" id="btn-goals-toggle">⚙ Edit goals</button>
+                </div>
+                <div class="goals-editor" id="goals-editor">
+                    <div class="goals-grid">
+                        <div class="goal-field"><label>Daily Calories</label><input type="number" id="gi-kcal" value="${g.kcal}" min="500" max="10000"></div>
+                        <div class="goal-field"><label>Protein (g)</label><input type="number" id="gi-protein" value="${g.protein}" min="0" max="500"></div>
+                        <div class="goal-field"><label>Carbs (g)</label><input type="number" id="gi-carbs" value="${g.carbs}" min="0" max="1000"></div>
+                        <div class="goal-field"><label>Fat (g)</label><input type="number" id="gi-fat" value="${g.fat}" min="0" max="500"></div>
+                    </div>
+                    <div class="goals-note">Changes save automatically</div>
+                </div>
+            </div>`;
+
+        document.getElementById('btn-goals-toggle').addEventListener('click', () => {
+            document.getElementById('goals-editor').classList.toggle('open');
+        });
+
+        ['kcal', 'protein', 'carbs', 'fat'].forEach(key => {
+            document.getElementById(`gi-${key}`).addEventListener('input', e => {
+                const val = parseInt(e.target.value);
+                if (!isNaN(val) && val > 0) {
+                    localStorage.setItem(`goal-${key}`, val);
+                    updateSummary();
+                }
+            });
+        });
+
+        updateSummary();
+    }
+
+    // ── Build meal list ───────────────────────────────────────────
     function buildMeals() {
         const list = document.getElementById('meal-list');
         meals.forEach((meal, i) => {
-            const key = `meal-${today}-${i}`;
+            const key  = `meal-${today}-${i}`;
             const done = localStorage.getItem(key) === 'true';
 
             const item = document.createElement('div');
@@ -878,39 +526,161 @@
             circle.className = 'meal-circle';
             circle.textContent = done ? '✓' : '';
 
+            const content = document.createElement('div');
+            content.className = 'meal-content';
+
             const text = document.createElement('span');
             text.className = 'meal-text';
-            text.textContent = meal;
+            text.textContent = meal.name;
 
-            item.append(circle, text);
+            const meta = document.createElement('div');
+            meta.className = 'meal-meta';
+            meta.innerHTML = `
+                <span class="meal-tag-kcal">~${meal.kcal} kcal</span>
+                <span class="meal-tag-p">P ${meal.protein}g</span>
+                <span class="meal-tag-c">C ${meal.carbs}g</span>
+                <span class="meal-tag-f">F ${meal.fat}g</span>`;
+
+            content.append(text, meta);
+            item.append(circle, content);
+
             item.addEventListener('click', () => {
                 const now = localStorage.getItem(key) === 'true';
                 localStorage.setItem(key, !now);
                 item.classList.toggle('done', !now);
                 circle.textContent = !now ? '✓' : '';
+                updateSummary();
             });
 
             list.appendChild(item);
         });
     }
 
-    // ── 12-Week tracker ──────────────────────────────────────────
+    // ── Build custom food log ─────────────────────────────────────
+    function buildCustomFoodLog() {
+        const section = document.getElementById('custom-food-log');
+
+        const title = document.createElement('div');
+        title.className = 'section-label';
+        title.textContent = 'Additional food log';
+        section.appendChild(title);
+
+        const foodList = document.createElement('div');
+        foodList.id = 'custom-food-list';
+        section.appendChild(foodList);
+
+        const renderFoods = () => {
+            foodList.innerHTML = '';
+            const foods = getCustomFoods();
+            if (foods.length === 0) {
+                foodList.innerHTML = '<div class="empty-custom">No extra foods logged today</div>';
+                return;
+            }
+            foods.forEach((food, idx) => {
+                const item = document.createElement('div');
+                item.className = 'custom-food-item';
+
+                const macroParts = [];
+                if (food.protein) macroParts.push(`P ${food.protein}g`);
+                if (food.carbs)   macroParts.push(`C ${food.carbs}g`);
+                if (food.fat)     macroParts.push(`F ${food.fat}g`);
+
+                item.innerHTML = `
+                    <span class="custom-food-name">${food.name}</span>
+                    <span class="custom-food-kcal">${food.kcal} kcal</span>
+                    ${macroParts.length ? `<span class="custom-food-macros">${macroParts.join(' · ')}</span>` : ''}`;
+
+                const rm = document.createElement('button');
+                rm.className = 'btn-remove-food';
+                rm.textContent = '×';
+                rm.title = 'Remove';
+                rm.addEventListener('click', () => {
+                    const list = getCustomFoods();
+                    list.splice(idx, 1);
+                    saveCustomFoods(list);
+                    renderFoods();
+                    updateSummary();
+                });
+                item.appendChild(rm);
+                foodList.appendChild(item);
+            });
+        };
+
+        renderFoods();
+
+        // Add food form
+        const form = document.createElement('div');
+        form.className = 'add-food-form';
+
+        const mainRow = document.createElement('div');
+        mainRow.className = 'food-input-row';
+
+        const nameIn  = Object.assign(document.createElement('input'), { type: 'text',   className: 'food-name-input', placeholder: 'Food or drink name' });
+        const kcalIn  = Object.assign(document.createElement('input'), { type: 'number', placeholder: 'kcal', min: '0' });
+        mainRow.append(nameIn, kcalIn);
+
+        const macrosRow = document.createElement('div');
+        macrosRow.className = 'food-macros-row';
+        const proteinIn = Object.assign(document.createElement('input'), { type: 'number', placeholder: 'Protein (g)', min: '0' });
+        const carbsIn   = Object.assign(document.createElement('input'), { type: 'number', placeholder: 'Carbs (g)',   min: '0' });
+        const fatIn     = Object.assign(document.createElement('input'), { type: 'number', placeholder: 'Fat (g)',     min: '0' });
+        macrosRow.append(proteinIn, carbsIn, fatIn);
+
+        const footer = document.createElement('div');
+        footer.className = 'food-form-footer';
+
+        const macroToggle = document.createElement('button');
+        macroToggle.className = 'btn-macro-toggle';
+        macroToggle.textContent = '+ add macros';
+        macroToggle.addEventListener('click', () => {
+            const open = macrosRow.classList.toggle('open');
+            macroToggle.textContent = open ? '− hide macros' : '+ add macros';
+        });
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn-add-food';
+        addBtn.textContent = 'Add food';
+        addBtn.addEventListener('click', () => {
+            const name = nameIn.value.trim();
+            const kcal = parseInt(kcalIn.value) || 0;
+            if (!name) {
+                nameIn.style.borderColor = '#ef4444';
+                nameIn.focus();
+                setTimeout(() => nameIn.style.borderColor = '', 1500);
+                return;
+            }
+            const foods = getCustomFoods();
+            foods.push({
+                name,
+                kcal,
+                protein: parseInt(proteinIn.value) || 0,
+                carbs:   parseInt(carbsIn.value)   || 0,
+                fat:     parseInt(fatIn.value)      || 0,
+            });
+            saveCustomFoods(foods);
+            nameIn.value = kcalIn.value = proteinIn.value = carbsIn.value = fatIn.value = '';
+            renderFoods();
+            updateSummary();
+            nameIn.focus();
+        });
+
+        [nameIn, kcalIn].forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); }));
+
+        footer.append(macroToggle, addBtn);
+        form.append(mainRow, macrosRow, footer);
+        section.appendChild(form);
+    }
+
+    // ── 12-week tracker ───────────────────────────────────────────
     function buildWeeks() {
         const grid = document.getElementById('weeks-grid');
         for (let i = 1; i <= 12; i++) {
             const done = localStorage.getItem(`week-${i}`) === 'true';
-
             const tile = document.createElement('div');
             tile.className = 'week-tile' + (done ? ' done' : '');
-
-            const label = document.createElement('span');
-            label.textContent = `W${i}`;
-
-            const check = document.createElement('span');
-            check.className = 'check-mark';
-            check.textContent = done ? '✓' : '';
-
-            tile.append(label, check);
+            const lbl   = document.createElement('span'); lbl.textContent = `W${i}`;
+            const check = document.createElement('span'); check.className = 'check-mark'; check.textContent = done ? '✓' : '';
+            tile.append(lbl, check);
             tile.addEventListener('click', () => {
                 const now = localStorage.getItem(`week-${i}`) === 'true';
                 localStorage.setItem(`week-${i}`, !now);
@@ -918,7 +688,6 @@
                 check.textContent = !now ? '✓' : '';
                 refreshProgress();
             });
-
             grid.appendChild(tile);
         }
         refreshProgress();
@@ -926,167 +695,145 @@
 
     function refreshProgress() {
         let count = 0;
-        for (let i = 1; i <= 12; i++) {
-            if (localStorage.getItem(`week-${i}`) === 'true') count++;
-        }
+        for (let i = 1; i <= 12; i++) if (localStorage.getItem(`week-${i}`) === 'true') count++;
         const pct = Math.round((count / 12) * 100);
         document.getElementById('progress-fill').style.width = pct + '%';
-        document.getElementById('progress-text').textContent =
-            `${count} of 12 weeks complete — ${pct}%`;
+        document.getElementById('progress-text').textContent = `${count} of 12 weeks complete — ${pct}%`;
     }
 
     // ── Form tips modal ───────────────────────────────────────────
-    const overlay   = document.getElementById('modal-overlay');
+    const overlay    = document.getElementById('modal-overlay');
     const modalClose = document.getElementById('modal-close');
 
-    function openModal(exercise) {
-        document.getElementById('modal-title').textContent  = exercise.name;
-        document.getElementById('modal-muscle').textContent = exercise.muscle;
-
+    function openModal(ex) {
+        document.getElementById('modal-title').textContent  = ex.name;
+        document.getElementById('modal-muscle').textContent = ex.muscle;
         const tipsList = document.getElementById('modal-tips');
         tipsList.innerHTML = '';
-        exercise.tips.forEach(tip => {
-            const li = document.createElement('li');
-            li.textContent = tip;
-            tipsList.appendChild(li);
-        });
-
-        const ytLink = document.getElementById('modal-yt');
-        ytLink.href = 'https://www.youtube.com/results?search_query=' +
-            encodeURIComponent(exercise.name + ' proper form tutorial');
-
+        ex.tips.forEach(t => { const li = document.createElement('li'); li.textContent = t; tipsList.appendChild(li); });
+        document.getElementById('modal-yt').href =
+            'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' proper form tutorial');
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
+    function closeModal() { overlay.classList.remove('open'); document.body.style.overflow = ''; }
     modalClose.addEventListener('click', closeModal);
     overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-    // ── Workouts ─────────────────────────────────────────────────
+    // ── Workout data ──────────────────────────────────────────────
+    const workoutDays = [
+        {
+            id: 'mon', label: 'Monday (Day 1) — Chest & Triceps',
+            exercises: [
+                { name: 'Dumbbell Incline bench press',              sets:'4', reps:'8-10',  weight:'12.5', rest:'90', muscle:'Upper chest · Front delts',       tips:['Set bench to 30–45° — any higher shifts work to delts','Retract and depress shoulder blades before each set','Lower to upper chest, elbows at ~75° from torso (not flared to 90°)','Press up and slightly inward — don\'t fully lock out','Keep wrists stacked over elbows throughout'] },
+                { name: 'Dumbbell standing shoulder press',          sets:'4', reps:'6-8',   weight:'12.5', rest:'90', muscle:'Front & side delts · Triceps',     tips:['Start with dumbbells at shoulder height, palms forward or slightly inward','Brace your core hard — no back support standing','Press straight overhead, dumbbells close together at the top','Lower under full control back to shoulder height','Don\'t use leg drive — if you are, the weight is too heavy'] },
+                { name: 'Cable bent over chest fly',                 sets:'3', reps:'10-12', weight:'40',   rest:'90', muscle:'Mid chest · Front delts',          tips:['Set cables at shoulder height; hinge forward ~30–45°','Hold handles with a slight elbow bend — keep that angle fixed','Drive the movement by squeezing your chest, not bending elbows','Bring hands together in front of your chest at the peak','Control the eccentric — don\'t let cables yank your arms back'] },
+                { name: 'Cuffed lateral raises',                     sets:'3', reps:'15-20', weight:'15',   rest:'90', muscle:'Side delts',                       tips:['Lead with elbows, not hands — imagine pouring a jug sideways','Raise to shoulder height only — higher recruits traps','Keep a slight elbow bend (~10–15°) and maintain it throughout','Don\'t shrug; if you are, the weight is too heavy','Lower slowly (2–3 sec) — the eccentric matters here'] },
+                { name: 'Cable straight bar triceps pushdown',       sets:'3', reps:'12-15', weight:'40',   rest:'90', muscle:'Triceps (all 3 heads)',             tips:['Stand close, lean very slightly forward at hips','Pin elbows tightly to sides — they are the pivot point','Push until arms are fully extended, squeeze hard','Control the return — stop before elbows rise above 90°','Avoid using lats to initiate; movement is forearm-only'] },
+                { name: 'Cable standing overhead triceps extension', sets:'3', reps:'15-20', weight:'20',   rest:'90', muscle:'Triceps long head',                 tips:['Face away, pulley low; step into a stagger stance','Raise arms overhead so upper arms stay beside your ears','Extend fully at the top, lock out and squeeze','Lower slowly for a deep stretch behind your head','Brace core to avoid lumbar extension overhead'] },
+            ],
+            notes: ['Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s'],
+        },
+        {
+            id: 'wed', label: 'Wednesday (Day 3) — Back & Biceps',
+            exercises: [
+                { name: 'Lat Machine wide grip pulldown', sets:'4', reps:'10-12', weight:'50', rest:'90', muscle:'Lats · Rear delts · Biceps',        tips:['Grip wider than shoulder width; lean back slightly (~10–15°)','Initiate by depressing shoulder blades first','Drive elbows down and back toward your hips','Pull bar to upper chest; pause and squeeze lats','Let bar rise under control — don\'t let shoulder blades wing out'] },
+                { name: 'Barbell bent over row',          sets:'4', reps:'5-8',   weight:'40', rest:'90', muscle:'Lats · Mid-back · Rear delts',       tips:['Hinge to ~45° to horizontal; soft knees, flat back','Pull bar to lower chest/upper abdomen','Drive elbows up and back, squeeze shoulder blades at top','Keep bar close to body — no swinging','If lower back rounds, reduce weight'] },
+                { name: 'Cable seated row',               sets:'4', reps:'10-12', weight:'35', rest:'90', muscle:'Mid-back · Lats · Rhomboids',        tips:['Sit tall with slight forward lean at start','Pull handle to lower chest/abdomen, elbows back past torso','Squeeze shoulder blades together and hold 1 second','Let cable pull arms out under control — don\'t collapse forward','Avoid excessive rocking; torso stays roughly upright'] },
+                { name: 'Barbell shrug',                  sets:'2', reps:'12-15', weight:'30', rest:'90', muscle:'Traps (upper)',                      tips:['Hold bar at hip level, arms straight','Shrug straight up — no rolling the shoulders','Hold the contracted position 1–2 seconds','Lower slowly for a full stretch at the bottom','Keep neck neutral — don\'t jut head forward'] },
+                { name: 'Barbell bicep curl',             sets:'3', reps:'10-15', weight:'15', rest:'90', muscle:'Biceps brachii · Brachialis',        tips:['Pin elbows to sides — they shouldn\'t move','Full range: extend fully at the bottom','Curl up in a smooth arc, fully contracted at top','No swinging — reduce weight if you are','Lower all the way back for full range of motion'] },
+                { name: 'Cable single arm bicep curl',    sets:'2', reps:'15-20', weight:'20', rest:'90', muscle:'Biceps brachii',                     tips:['Stand side-on or facing cable, pulley low, underhand grip','Keep upper arm stationary — elbow stays at side','Curl fully until palm faces your shoulder, squeeze 1 sec','Lower slowly — cable provides continuous tension','Complete all reps one side before switching'] },
+            ],
+            notes: [],
+        },
+        {
+            id: 'fri', label: 'Friday (Day 5) — Legs & Abs + Cardio',
+            exercises: [
+                { name: 'Machine seated leg curl',     sets:'3', reps:'10-15',       weight:'45', rest:'90', muscle:'Hamstrings',                         tips:['Align pivot with your knee joint','Keep hips pressed firmly into the seat','Curl until hamstrings are fully contracted','Lower over 2–3 seconds — no dropping','Point toes slightly toward shins to increase activation'] },
+                { name: 'Hack Squats',                 sets:'3', reps:'10-15',       weight:'55', rest:'90', muscle:'Quads · Glutes · Hamstrings',        tips:['Feet shoulder-width, toes angled out 15–30°','Keep lower back firmly into the pad throughout','Lower until thighs are parallel or below','Drive through full foot, knees out over toes','Don\'t fully lock out — maintain slight bend at top'] },
+                { name: 'Seated leg press',            sets:'4', reps:'15-20',       weight:'55', rest:'90', muscle:'Quads · Glutes · Hamstrings',        tips:['Feet hip-width in the middle to upper platform','Lower until knees are around 90° — stop before back rounds','Drive through whole foot, knees tracking toes','Don\'t lock out knees at top','Keep lower back and glutes in contact with seat'] },
+                { name: 'Barbell romanian deadlift',   sets:'2', reps:'10-15',       weight:'20', rest:'90', muscle:'Hamstrings · Glutes · Lower back',   tips:['Start standing, bar at hips, overhand grip','Push hips back — this is a hip hinge, not a squat','Maintain slight knee bend and flat back throughout','Lower until you feel a strong hamstring stretch','Drive hips forward to stand; squeeze glutes hard at top'] },
+                { name: 'Machine seated calf raise',   sets:'4', reps:'10-15',       weight:'30', rest:'90', muscle:'Soleus · Gastrocnemius',             tips:['Balls of feet on edge — heels hanging off','Lower heels fully for maximum stretch','Press up as high as possible; pause and squeeze at top','No bouncing — pause at stretched position','3-second descent; calves respond well to slow eccentrics'] },
+                { name: 'Dumbbell walking lunge',      sets:'1', reps:'Until Failure', weight:'10', rest:'-', muscle:'Quads · Glutes · Hamstrings',       tips:['Dumbbells at sides, core braced, stand tall','Step forward and lower back knee toward floor (~1" above)','Front shin roughly vertical, knee tracks over second toe','Push through front heel and step through','Keep torso upright — don\'t lean forward over front knee'] },
+            ],
+            notes: ['Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s', '30 min Cardio — bike, jog, swim, etc.'],
+        },
+        {
+            id: 'sat', label: 'Saturday (Day 6) — Arms Focus',
+            exercises: [
+                { name: 'Crossbody hammer curls',                    sets:'3', reps:'10-15', weight:'10',          rest:'60', muscle:'Brachialis · Brachioradialis',  tips:['Neutral (hammer) grip — thumbs up throughout','Curl one dumbbell across body toward opposite shoulder','Keep upper arm stationary — forearm only moves','Crossbody angle targets brachialis more than standard curl','Alternate arms or complete one side first — control descent'] },
+                { name: 'EZ Bar preacher curl',                      sets:'3', reps:'8-10',  weight:'10',          rest:'60', muscle:'Biceps short head · Brachialis', tips:['Upper arms flat on the pad — stay in contact throughout','Use inner angled grips for natural wrist position','Lower to near full extension — don\'t hyperextend','Curl until bar near chin, squeeze hard at top','Preacher pad removes cheating — use lighter weight than standing'] },
+                { name: 'Barbell bicep curl',                        sets:'2', reps:'8',     weight:'17.5',        rest:'60', muscle:'Biceps brachii · Brachialis',    tips:['Pin elbows to sides — they shouldn\'t move','Full range: extend fully at the bottom','Curl up in a smooth arc, fully contracted at top','No swinging — reduce weight if you are','Lower all the way back for full range of motion'] },
+                { name: 'Cable rope triceps extension',              sets:'4', reps:'12',    weight:'40',          rest:'60', muscle:'Triceps (all 3 heads)',           tips:['Slight forward lean, elbows pinned at sides','Spread rope apart at the bottom for maximum contraction','Squeeze hard at full extension; hold briefly','Control the return slowly (2–3 seconds)','Elbows must not move — they\'re the pivot point'] },
+                { name: 'Plate weighted dip',                        sets:'3', reps:'8-12',  weight:'Body Weight', rest:'60', muscle:'Triceps · Lower chest · Delts',   tips:['Use dip belt or hold plate between feet','Upright torso = triceps focus; lean forward = chest focus','Lower until upper arms are at least parallel to floor','Press up without fully locking out — maintain tension','Start bodyweight until form is solid before adding load'] },
+                { name: 'Cable standing overhead triceps extension', sets:'3', reps:'15-20', weight:'20',          rest:'60', muscle:'Triceps long head',               tips:['Face away, pulley low; step into a stagger stance','Raise arms overhead so upper arms stay beside your ears','Extend fully at the top, lock out and squeeze','Lower slowly for a deep stretch behind your head','Brace core to avoid lumbar extension overhead'] },
+            ],
+            notes: [],
+        },
+    ];
+
+    // ── Build workouts ────────────────────────────────────────────
     function buildWorkouts() {
         const container = document.getElementById('workout-container');
-
         workoutDays.forEach(day => {
             const dayDoneKey = `workout-${day.id}-done-${today}`;
-            const dayDone = localStorage.getItem(dayDoneKey) === 'true';
+            const dayDone    = localStorage.getItem(dayDoneKey) === 'true';
 
-            const wrap = document.createElement('div');
-            wrap.className = 'workout-day';
-
-            // Header
-            const header = document.createElement('div');
-            header.className = 'workout-header';
-
-            const left = document.createElement('div');
-            left.className = 'workout-header-left';
-
-            const title = document.createElement('span');
-            title.className = 'workout-title';
-            title.textContent = day.label;
+            const wrap   = document.createElement('div'); wrap.className = 'workout-day';
+            const header = document.createElement('div'); header.className = 'workout-header';
+            const left   = document.createElement('div'); left.className = 'workout-header-left';
+            const title  = document.createElement('span'); title.className = 'workout-title'; title.textContent = day.label;
             left.appendChild(title);
-
             if (dayDone) {
-                const badge = document.createElement('span');
-                badge.className = 'workout-done-badge';
-                badge.textContent = 'Done today ✓';
-                left.appendChild(badge);
+                const badge = document.createElement('span'); badge.className = 'workout-done-badge'; badge.textContent = 'Done today ✓'; left.appendChild(badge);
             }
-
-            const chevron = document.createElement('span');
-            chevron.className = 'chevron';
-            chevron.textContent = '▶';
-
+            const chevron = document.createElement('span'); chevron.className = 'chevron'; chevron.textContent = '▶';
             header.append(left, chevron);
 
-            // Body
-            const body = document.createElement('div');
-            body.className = 'workout-body';
-
-            const tableWrap = document.createElement('div');
-            tableWrap.className = 'table-wrap';
-
-            const table = document.createElement('table');
-            table.innerHTML = `<thead><tr>
-                <th>Exercise</th>
-                <th>Sets</th>
-                <th>Reps</th>
-                <th>Weight (kg)</th>
-                <th>Rest (s)</th>
-            </tr></thead>`;
-
+            const body      = document.createElement('div'); body.className = 'workout-body';
+            const tableWrap = document.createElement('div'); tableWrap.className = 'table-wrap';
+            const table     = document.createElement('table');
+            table.innerHTML = `<thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight (kg)</th><th>Rest (s)</th></tr></thead>`;
             const tbody = document.createElement('tbody');
 
             day.exercises.forEach((ex, rowIdx) => {
                 const tr = document.createElement('tr');
-
                 const makeInput = (field, def) => {
                     const key = `workout-${day.id}-${rowIdx}-${field}`;
-                    const inp = document.createElement('input');
-                    inp.type = 'text';
-                    inp.className = 'ex-input';
+                    const inp = Object.assign(document.createElement('input'), { type: 'text', className: 'ex-input' });
                     inp.value = localStorage.getItem(key) ?? def;
                     inp.addEventListener('change', () => localStorage.setItem(key, inp.value));
                     return inp;
                 };
-
-                // Exercise name cell with info button
                 const tdName = document.createElement('td');
-                const nameCell = document.createElement('div');
-                nameCell.className = 'ex-name-cell';
+                const cell   = document.createElement('div'); cell.className = 'ex-name-cell';
+                const span   = document.createElement('span'); span.textContent = ex.name;
+                const btn    = document.createElement('button'); btn.className = 'info-btn'; btn.textContent = 'i'; btn.title = 'Form cues';
+                btn.addEventListener('click', e => { e.stopPropagation(); openModal(ex); });
+                cell.append(span, btn); tdName.appendChild(cell);
 
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = ex.name;
-
-                const infoBtn = document.createElement('button');
-                infoBtn.className = 'info-btn';
-                infoBtn.textContent = 'i';
-                infoBtn.title = 'View form cues';
-                infoBtn.setAttribute('aria-label', `Form tips for ${ex.name}`);
-                infoBtn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    openModal(ex);
-                });
-
-                nameCell.append(nameSpan, infoBtn);
-                tdName.appendChild(nameCell);
-
-                const tdSets   = document.createElement('td'); tdSets.appendChild(makeInput('sets', ex.sets));
-                const tdReps   = document.createElement('td'); tdReps.appendChild(makeInput('reps', ex.reps));
-                const tdWeight = document.createElement('td'); tdWeight.appendChild(makeInput('weight', ex.weight));
-                const tdRest   = document.createElement('td'); tdRest.appendChild(makeInput('rest', ex.rest));
-
-                tr.append(tdName, tdSets, tdReps, tdWeight, tdRest);
+                const tdSets = document.createElement('td'); tdSets.appendChild(makeInput('sets', ex.sets));
+                const tdReps = document.createElement('td'); tdReps.appendChild(makeInput('reps', ex.reps));
+                const tdWt   = document.createElement('td'); tdWt.appendChild(makeInput('weight', ex.weight));
+                const tdRest = document.createElement('td'); tdRest.appendChild(makeInput('rest', ex.rest));
+                tr.append(tdName, tdSets, tdReps, tdWt, tdRest);
                 tbody.appendChild(tr);
             });
 
             day.notes.forEach(note => {
-                const tr = document.createElement('tr');
-                tr.className = 'info-row';
-                const td = document.createElement('td');
-                td.colSpan = 5;
-                td.textContent = note;
-                tr.appendChild(td);
-                tbody.appendChild(tr);
+                const tr = document.createElement('tr'); tr.className = 'info-row';
+                const td = document.createElement('td'); td.colSpan = 5; td.textContent = note;
+                tr.appendChild(td); tbody.appendChild(tr);
             });
 
-            table.appendChild(tbody);
-            tableWrap.appendChild(table);
-            body.appendChild(tableWrap);
+            table.appendChild(tbody); tableWrap.appendChild(table); body.appendChild(tableWrap);
 
-            // Mark complete button
-            const footer = document.createElement('div');
-            footer.className = 'workout-footer';
-
-            const btn = document.createElement('button');
+            const footer = document.createElement('div'); footer.className = 'workout-footer';
+            const btn    = document.createElement('button');
             btn.className = 'btn-complete' + (dayDone ? ' active' : '');
             btn.textContent = dayDone ? 'Completed today ✓' : 'Mark as complete';
-
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 const now = localStorage.getItem(dayDoneKey) === 'true';
@@ -1094,22 +841,22 @@
                 btn.classList.toggle('active', !now);
                 btn.textContent = !now ? 'Completed today ✓' : 'Mark as complete';
             });
-
-            footer.appendChild(btn);
-            body.appendChild(footer);
+            footer.appendChild(btn); body.appendChild(footer);
 
             header.addEventListener('click', () => {
                 const open = body.classList.toggle('open');
                 chevron.classList.toggle('open', open);
             });
 
-            wrap.append(header, body);
-            container.appendChild(wrap);
+            wrap.append(header, body); container.appendChild(wrap);
         });
     }
 
+    // ── Init ──────────────────────────────────────────────────────
     buildWeeks();
+    buildNutritionSummary();
     buildMeals();
+    buildCustomFoodLog();
     buildWorkouts();
 </script>
 
