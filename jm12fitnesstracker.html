@@ -5,259 +5,631 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>12-Week Transformation Tracker</title>
     <style>
+        * { box-sizing: border-box; }
+
         body {
-            font-family: sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh;
         }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+
         h1 {
-            color: #2c3e50;
+            color: #f8fafc;
             text-align: center;
+            font-size: 1.7em;
+            margin: 8px 0 4px;
+            letter-spacing: -0.5px;
         }
-        h2 {
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-            margin-top: 30px;
-            color: #3498db;
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85em;
+            margin-bottom: 24px;
         }
-        .meal-section, .workout-day {
+
+        .card {
+            background: #1e2130;
+            border-radius: 14px;
+            padding: 20px;
             margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background-color: #ecf0f1;
+            border: 1px solid #2d3148;
         }
+
+        .card-title {
+            color: #7dd3fc;
+            margin: 0 0 16px 0;
+            font-size: 1.05em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── 12-Week Progress ── */
+
+        .progress-bar-track {
+            background: #0f1117;
+            border-radius: 99px;
+            height: 18px;
+            margin: 4px 0 8px;
+            overflow: hidden;
+            border: 1px solid #2d3148;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a, #4ade80);
+            border-radius: 99px;
+            transition: width 0.4s ease;
+            min-width: 0;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #4ade80;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .weeks-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .week-tile {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            border: 2px solid #2d3148;
+            background: #161928;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75em;
+            font-weight: 700;
+            color: #94a3b8;
+            user-select: none;
+            gap: 2px;
+        }
+
+        .week-tile:hover { border-color: #4ade80; color: #4ade80; }
+
+        .week-tile.done {
+            background: #14532d;
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .week-tile .check-mark {
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        /* ── Meal List ── */
+
+        .date-badge {
+            font-size: 0.78em;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
         .meal-item {
             display: flex;
             align-items: center;
-            margin-bottom: 5px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            background: #161928;
+            border: 1px solid #2d3148;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            gap: 12px;
         }
-        .meal-item label {
-            margin-left: 10px;
-            font-weight: bold;
+
+        .meal-item:hover { border-color: #7dd3fc; }
+
+        .meal-item.done {
+            background: #0d1a0d;
+            border-color: #14532d;
         }
-        /* Workout Table Styling */
-        .workout-day table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+
+        .meal-item.done .meal-text {
+            text-decoration: line-through;
+            color: #475569;
         }
-        .workout-day th, .workout-day td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
+
+        .meal-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #334155;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            transition: all 0.15s;
+            color: transparent;
         }
-        .workout-day th {
-            background-color: #3498db;
+
+        .meal-item.done .meal-circle {
+            background: #16a34a;
+            border-color: #16a34a;
             color: white;
         }
-        .workout-day input[type="text"] {
-            width: 80px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+
+        .meal-text {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            transition: all 0.15s;
         }
-        /* Progress Bar Styling */
-        #progress-tracker {
+
+        /* ── Workout Sections ── */
+
+        .workout-day {
+            margin-bottom: 12px;
+            border: 1px solid #2d3148;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .workout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #161928;
+            cursor: pointer;
+            user-select: none;
+            gap: 10px;
+        }
+
+        .workout-header:hover { background: #1a1f35; }
+
+        .workout-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .workout-title {
+            font-size: 0.92em;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .workout-done-badge {
+            font-size: 0.72em;
+            background: #14532d;
+            color: #4ade80;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 600;
+        }
+
+        .chevron {
+            color: #475569;
+            font-size: 0.75em;
+            transition: transform 0.2s;
+        }
+
+        .chevron.open { transform: rotate(90deg); }
+
+        .workout-body {
+            display: none;
+            padding: 0 0 12px;
+        }
+
+        .workout-body.open { display: block; }
+
+        .table-wrap {
+            overflow-x: auto;
+            padding: 12px 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84em;
+        }
+
+        thead th {
+            background: #0f1117;
+            color: #7dd3fc;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #1e2130;
+            vertical-align: middle;
+            color: #cbd5e1;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #1a1f35; }
+
+        .ex-input {
+            width: 68px;
+            padding: 4px 6px;
+            background: #0f1117;
+            border: 1px solid #2d3148;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9em;
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #d1e7dd;
-            border: 1px solid #a3cfb6;
-            border-radius: 8px;
+            transition: border-color 0.15s;
         }
-        .week-checkbox {
-            margin: 5px;
+
+        .ex-input:focus {
+            outline: none;
+            border-color: #7dd3fc;
+        }
+
+        .info-row td {
+            color: #f59e0b;
+            font-size: 0.82em;
+            font-style: italic;
+            background: #1a1505;
+        }
+
+        .workout-footer {
+            padding: 10px 16px 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-complete {
+            padding: 6px 14px;
+            background: #161928;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.82em;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .btn-complete:hover {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .btn-complete.active {
+            background: #14532d;
+            border-color: #4ade80;
+            color: #4ade80;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🔥 12-Week Fitness Transformation Tracker</h1>
+    <h1>12-Week Transformation Tracker</h1>
+    <div class="subtitle" id="today-label"></div>
 
-    <h2>🗓️ 12-Week Progress Tracker</h2>
-    <div id="progress-tracker">
-        <p>Check off each week as you complete it:</p>
+    <!-- 12-Week Progress -->
+    <div class="card">
+        <div class="card-title">📅 12-Week Progress</div>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
         </div>
-
-    <h2>🍎 Daily Nutrition Checklist</h2>
-    <p>Check off each meal once you've eaten it. Try to use one of the variety options today!</p>
-    <div class="meal-section" id="meal-list">
-        </div>
-
-    <h2>🏋️ Daily Workout Plan (Adjustable)</h2>
-
-    <div class="workout-day">
-        <h3>Monday (Day 1) - Chest & Triceps</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Exercise</th>
-                    <th>Sets</th>
-                    <th>Reps</th>
-                    <th>Weight (kg)</th>
-                    <th>Rest (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Dumbbell Incline bench press</td><td><input type="text" value="4"></td><td><input type="text" value="8-10"></td><td><input type="text" value="12.5"></td><td>90</td></tr>
-                <tr><td>Dumbbell standing shoulder press</td><td><input type="text" value="4"></td><td><input type="text" value="6-8"></td><td><input type="text" value="12.5"></td><td>90</td></tr>
-                <tr><td>Cable bent over chest fly</td><td><input type="text" value="3"></td><td><input type="text" value="10-12"></td><td><input type="text" value="40"></td><td>90</td></tr>
-                <tr><td>Cuffed lateral raises</td><td><input type="text" value="3"></td><td><input type="text" value="15-20"></td><td><input type="text" value="15"></td><td>90</td></tr>
-                <tr><td>Cable straight bar triceps pushdown</td><td><input type="text" value="3"></td><td><input type="text" value="12-15"></td><td><input type="text" value="40"></td><td>90</td></tr>
-                <tr><td>Cable standing overhead triceps extension</td><td><input type="text" value="3"></td><td><input type="text" value="15-20"></td><td><input type="text" value="20"></td><td>90</td></tr>
-                <tr><td colspan="5">**Abdominal Circuit** (3 Rounds): Elbow plank (3-60s) / Cable kneeling crunch (15-20 reps) / Lying straight leg raise (15-20 reps) / Rest 60s</td></tr>
-            </tbody>
-        </table>
+        <div class="progress-text" id="progress-text"></div>
+        <div class="weeks-grid" id="weeks-grid"></div>
     </div>
 
-    <div class="workout-day">
-        <h3>Wednesday (Day 3) - Back & Biceps</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Exercise</th>
-                    <th>Sets</th>
-                    <th>Reps</th>
-                    <th>Weight (kg)</th>
-                    <th>Rest (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Lat Machine wide grip pulldown</td><td><input type="text" value="4"></td><td><input type="text" value="10-12"></td><td><input type="text" value="50"></td><td>90</td></tr>
-                <tr><td>Barbell bent over row</td><td><input type="text" value="4"></td><td><input type="text" value="5-8"></td><td><input type="text" value="40"></td><td>90</td></tr>
-                <tr><td>Cable seated row</td><td><input type="text" value="4"></td><td><input type="text" value="10-12"></td><td><input type="text" value="35"></td><td>90</td></tr>
-                <tr><td>Barbell shrug</td><td><input type="text" value="2"></td><td><input type="text" value="12-15"></td><td><input type="text" value="30"></td><td>90</td></tr>
-                <tr><td>Barbell bicep curl</td><td><input type="text" value="3"></td><td><input type="text" value="10-15"></td><td><input type="text" value="15"></td><td>90</td></tr>
-                <tr><td>Cable single arm bicep curl</td><td><input type="text" value="2"></td><td><input type="text" value="15-20"></td><td><input type="text" value="20"></td><td>90</td></tr>
-            </tbody>
-        </table>
+    <!-- Daily Nutrition -->
+    <div class="card">
+        <div class="card-title">🍎 Daily Nutrition</div>
+        <div class="date-badge" id="meal-date-badge"></div>
+        <div id="meal-list"></div>
     </div>
 
-    <div class="workout-day">
-        <h3>Friday (Day 5) - Legs & Abs + Cardio</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Exercise</th>
-                    <th>Sets</th>
-                    <th>Reps</th>
-                    <th>Weight (kg)</th>
-                    <th>Rest (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Machine seated leg curl</td><td><input type="text" value="3"></td><td><input type="text" value="10-15"></td><td><input type="text" value="45"></td><td>90</td></tr>
-                <tr><td>Hack Squats</td><td><input type="text" value="3"></td><td><input type="text" value="10-15"></td><td><input type="text" value="55"></td><td>90</td></tr>
-                <tr><td>Seated leg press</td><td><input type="text" value="4"></td><td><input type="text" value="15-20"></td><td><input type="text" value="55"></td><td>90</td></tr>
-                <tr><td>Barbell romanian deadlift</td><td><input type="text" value="2"></td><td><input type="text" value="10-15"></td><td><input type="text" value="20"></td><td>90</td></tr>
-                <tr><td>Machine seated calf raise</td><td><input type="text" value="4"></td><td><input type="text" value="10-15"></td><td><input type="text" value="30"></td><td>90</td></tr>
-                <tr><td>Dumbbell walking lunge</td><td><input type="text" value="1"></td><td><input type="text" value="Until Failure"></td><td><input type="text" value="10"></td><td>-</td></tr>
-                <tr><td colspan="5">**Abdominal Circuit** (3 Rounds): Elbow plank (3-60s) / Cable kneeling crunch (15-20 reps) / Lying straight leg raise (15-20 reps) / Rest 60s</td></tr>
-                <tr><td colspan="5">**30 minutes Cardio** (Bike, jog, swim etc.)</td></tr>
-            </tbody>
-        </table>
+    <!-- Workouts -->
+    <div class="card">
+        <div class="card-title">🏋️ Weekly Workout Plan</div>
+        <div id="workout-container"></div>
     </div>
-
-    <div class="workout-day">
-        <h3>Saturday (Day 6) - Arms Focus</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Exercise</th>
-                    <th>Sets</th>
-                    <th>Reps</th>
-                    <th>Weight (kg)</th>
-                    <th>Rest (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Crossbody hammer curls</td><td><input type="text" value="3"></td><td><input type="text" value="10-15"></td><td><input type="text" value="10"></td><td>60</td></tr>
-                <tr><td>EZ Bar preacher curl</td><td><input type="text" value="3"></td><td><input type="text" value="8-10"></td><td><input type="text" value="10"></td><td>60</td></tr>
-                <tr><td>Barbell bicep curl</td><td><input type="text" value="2"></td><td><input type="text" value="8"></td><td><input type="text" value="17.5"></td><td>60</td></tr>
-                <tr><td>Cable rope triceps extension</td><td><input type="text" value="4"></td><td><input type="text" value="12"></td><td><input type="text" value="40"></td><td>60</td></tr>
-                <tr><td>Plate weighted dip</td><td><input type="text" value="3"></td><td><input type="text" value="8-12"></td><td><input type="text" value="Body Weight"></td><td>60</td></tr>
-                <tr><td>Cable standing overhead triceps extension</td><td><input type="text" value="3"></td><td><input type="text" value="15-20"></td><td><input type="text" value="20"></td><td>60</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <script>
-        // List of meals
-        const meals = [
-            "Meal 1: Sourdough, Cheese, Eggs, Banana",
-            "Meal 2: Chicken, Rice, Veg, Olive Oil",
-            "Meal 3: Pork Mince, Potatoes, Asparagus/Green Veg, Olive Oil",
-            "Meal 4: Oats, Whey Protein, Chocolate, Blueberries"
-        ];
-        
-        const mealListDiv = document.getElementById('meal-list');
-
-        // Dynamically create meal checkboxes
-        meals.forEach((meal, index) => {
-            const mealItem = document.createElement('div');
-            mealItem.className = 'meal-item';
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `meal-${index}`;
-            // Load state from local storage (so it remembers your checks)
-            checkbox.checked = localStorage.getItem(`meal-${index}`) === 'true';
-
-            // Save state when clicked
-            checkbox.addEventListener('change', (e) => {
-                localStorage.setItem(`meal-${index}`, e.target.checked);
-            });
-
-            const label = document.createElement('label');
-            label.htmlFor = `meal-${index}`;
-            label.textContent = meal;
-
-            mealItem.appendChild(checkbox);
-            mealItem.appendChild(label);
-            mealListDiv.appendChild(mealItem);
-        });
-
-        // 12-Week Progress Checkboxes
-        const progressTrackerDiv = document.getElementById('progress-tracker');
-        for (let i = 1; i <= 12; i++) {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'week-checkbox';
-            checkbox.id = `week-${i}`;
-            checkbox.checked = localStorage.getItem(`week-${i}`) === 'true';
-            
-            checkbox.addEventListener('change', (e) => {
-                localStorage.setItem(`week-${i}`, e.target.checked);
-            });
-
-            const label = document.createElement('label');
-            label.htmlFor = `week-${i}`;
-            label.textContent = `Week ${i}`;
-
-            progressTrackerDiv.appendChild(checkbox);
-            progressTrackerDiv.appendChild(label);
-            // Add a line break every 4 weeks for better display
-            if (i % 4 === 0 && i !== 12) {
-                progressTrackerDiv.appendChild(document.createElement('br'));
-            }
-        }
-
-        // NOTE on Workout Inputs: The weight/set/rep inputs are saved *only* if you don't close the browser window. 
-        // For permanent saving across sessions, you would need more advanced JavaScript.
-    </script>
 </div>
+
+<script>
+    const today = new Date().toISOString().slice(0, 10);
+
+    document.getElementById('today-label').textContent =
+        new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    document.getElementById('meal-date-badge').textContent =
+        'Tracking meals for ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    // ── Workout data ──────────────────────────────────────────────
+    const workoutDays = [
+        {
+            id: 'mon',
+            label: 'Monday (Day 1) — Chest & Triceps',
+            exercises: [
+                { name: 'Dumbbell Incline bench press',               sets: '4', reps: '8-10',         weight: '12.5', rest: '90' },
+                { name: 'Dumbbell standing shoulder press',           sets: '4', reps: '6-8',           weight: '12.5', rest: '90' },
+                { name: 'Cable bent over chest fly',                  sets: '3', reps: '10-12',         weight: '40',   rest: '90' },
+                { name: 'Cuffed lateral raises',                      sets: '3', reps: '15-20',         weight: '15',   rest: '90' },
+                { name: 'Cable straight bar triceps pushdown',        sets: '3', reps: '12-15',         weight: '40',   rest: '90' },
+                { name: 'Cable standing overhead triceps extension',  sets: '3', reps: '15-20',         weight: '20',   rest: '90' },
+            ],
+            notes: ['Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s'],
+        },
+        {
+            id: 'wed',
+            label: 'Wednesday (Day 3) — Back & Biceps',
+            exercises: [
+                { name: 'Lat Machine wide grip pulldown',  sets: '4', reps: '10-12',  weight: '50', rest: '90' },
+                { name: 'Barbell bent over row',           sets: '4', reps: '5-8',    weight: '40', rest: '90' },
+                { name: 'Cable seated row',                sets: '4', reps: '10-12',  weight: '35', rest: '90' },
+                { name: 'Barbell shrug',                   sets: '2', reps: '12-15',  weight: '30', rest: '90' },
+                { name: 'Barbell bicep curl',              sets: '3', reps: '10-15',  weight: '15', rest: '90' },
+                { name: 'Cable single arm bicep curl',     sets: '2', reps: '15-20',  weight: '20', rest: '90' },
+            ],
+            notes: [],
+        },
+        {
+            id: 'fri',
+            label: 'Friday (Day 5) — Legs & Abs + Cardio',
+            exercises: [
+                { name: 'Machine seated leg curl',        sets: '3', reps: '10-15',       weight: '45', rest: '90' },
+                { name: 'Hack Squats',                    sets: '3', reps: '10-15',       weight: '55', rest: '90' },
+                { name: 'Seated leg press',               sets: '4', reps: '15-20',       weight: '55', rest: '90' },
+                { name: 'Barbell romanian deadlift',      sets: '2', reps: '10-15',       weight: '20', rest: '90' },
+                { name: 'Machine seated calf raise',      sets: '4', reps: '10-15',       weight: '30', rest: '90' },
+                { name: 'Dumbbell walking lunge',         sets: '1', reps: 'Until Failure', weight: '10', rest: '-' },
+            ],
+            notes: [
+                'Ab Circuit (3 rounds): Elbow plank 60s · Cable kneeling crunch 15-20 · Lying leg raise 15-20 · Rest 60s',
+                '30 min Cardio — bike, jog, swim, etc.',
+            ],
+        },
+        {
+            id: 'sat',
+            label: 'Saturday (Day 6) — Arms Focus',
+            exercises: [
+                { name: 'Crossbody hammer curls',                     sets: '3', reps: '10-15', weight: '10',          rest: '60' },
+                { name: 'EZ Bar preacher curl',                       sets: '3', reps: '8-10',  weight: '10',          rest: '60' },
+                { name: 'Barbell bicep curl',                         sets: '2', reps: '8',     weight: '17.5',        rest: '60' },
+                { name: 'Cable rope triceps extension',               sets: '4', reps: '12',    weight: '40',          rest: '60' },
+                { name: 'Plate weighted dip',                         sets: '3', reps: '8-12',  weight: 'Body Weight', rest: '60' },
+                { name: 'Cable standing overhead triceps extension',  sets: '3', reps: '15-20', weight: '20',          rest: '60' },
+            ],
+            notes: [],
+        },
+    ];
+
+    // ── Meals ─────────────────────────────────────────────────────
+    const meals = [
+        'Meal 1: Sourdough, Cheese, Eggs, Banana',
+        'Meal 2: Chicken, Rice, Veg, Olive Oil',
+        'Meal 3: Pork Mince, Potatoes, Asparagus / Green Veg, Olive Oil',
+        'Meal 4: Oats, Whey Protein, Chocolate, Blueberries',
+    ];
+
+    function buildMeals() {
+        const list = document.getElementById('meal-list');
+        meals.forEach((meal, i) => {
+            const key = `meal-${today}-${i}`;
+            const done = localStorage.getItem(key) === 'true';
+
+            const item = document.createElement('div');
+            item.className = 'meal-item' + (done ? ' done' : '');
+
+            const circle = document.createElement('div');
+            circle.className = 'meal-circle';
+            circle.textContent = done ? '✓' : '';
+
+            const text = document.createElement('span');
+            text.className = 'meal-text';
+            text.textContent = meal;
+
+            item.append(circle, text);
+            item.addEventListener('click', () => {
+                const now = localStorage.getItem(key) === 'true';
+                localStorage.setItem(key, !now);
+                item.classList.toggle('done', !now);
+                circle.textContent = !now ? '✓' : '';
+            });
+
+            list.appendChild(item);
+        });
+    }
+
+    // ── 12-Week tracker ──────────────────────────────────────────
+    function buildWeeks() {
+        const grid = document.getElementById('weeks-grid');
+        for (let i = 1; i <= 12; i++) {
+            const done = localStorage.getItem(`week-${i}`) === 'true';
+
+            const tile = document.createElement('div');
+            tile.className = 'week-tile' + (done ? ' done' : '');
+
+            const label = document.createElement('span');
+            label.textContent = `W${i}`;
+
+            const check = document.createElement('span');
+            check.className = 'check-mark';
+            check.textContent = done ? '✓' : '';
+
+            tile.append(label, check);
+            tile.addEventListener('click', () => {
+                const now = localStorage.getItem(`week-${i}`) === 'true';
+                localStorage.setItem(`week-${i}`, !now);
+                tile.classList.toggle('done', !now);
+                check.textContent = !now ? '✓' : '';
+                refreshProgress();
+            });
+
+            grid.appendChild(tile);
+        }
+        refreshProgress();
+    }
+
+    function refreshProgress() {
+        let count = 0;
+        for (let i = 1; i <= 12; i++) {
+            if (localStorage.getItem(`week-${i}`) === 'true') count++;
+        }
+        const pct = Math.round((count / 12) * 100);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-text').textContent =
+            `${count} of 12 weeks complete — ${pct}%`;
+    }
+
+    // ── Workouts ─────────────────────────────────────────────────
+    function buildWorkouts() {
+        const container = document.getElementById('workout-container');
+
+        workoutDays.forEach(day => {
+            const dayDoneKey = `workout-${day.id}-done-${today}`;
+            const dayDone = localStorage.getItem(dayDoneKey) === 'true';
+
+            // Wrapper
+            const wrap = document.createElement('div');
+            wrap.className = 'workout-day';
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'workout-header';
+
+            const left = document.createElement('div');
+            left.className = 'workout-header-left';
+
+            const title = document.createElement('span');
+            title.className = 'workout-title';
+            title.textContent = day.label;
+            left.appendChild(title);
+
+            if (dayDone) {
+                const badge = document.createElement('span');
+                badge.className = 'workout-done-badge';
+                badge.textContent = 'Done today ✓';
+                left.appendChild(badge);
+            }
+
+            const chevron = document.createElement('span');
+            chevron.className = 'chevron';
+            chevron.textContent = '▶';
+
+            header.append(left, chevron);
+
+            // Body
+            const body = document.createElement('div');
+            body.className = 'workout-body';
+
+            // Table
+            const tableWrap = document.createElement('div');
+            tableWrap.className = 'table-wrap';
+
+            const table = document.createElement('table');
+            table.innerHTML = `<thead><tr>
+                <th>Exercise</th>
+                <th>Sets</th>
+                <th>Reps</th>
+                <th>Weight (kg)</th>
+                <th>Rest (s)</th>
+            </tr></thead>`;
+
+            const tbody = document.createElement('tbody');
+
+            day.exercises.forEach((ex, rowIdx) => {
+                const tr = document.createElement('tr');
+
+                const makeInput = (field, def) => {
+                    const key = `workout-${day.id}-${rowIdx}-${field}`;
+                    const inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.className = 'ex-input';
+                    inp.value = localStorage.getItem(key) ?? def;
+                    inp.addEventListener('change', () => localStorage.setItem(key, inp.value));
+                    return inp;
+                };
+
+                const tdName = document.createElement('td');
+                tdName.textContent = ex.name;
+
+                const tdSets = document.createElement('td'); tdSets.appendChild(makeInput('sets', ex.sets));
+                const tdReps = document.createElement('td'); tdReps.appendChild(makeInput('reps', ex.reps));
+                const tdWeight = document.createElement('td'); tdWeight.appendChild(makeInput('weight', ex.weight));
+                const tdRest = document.createElement('td'); tdRest.appendChild(makeInput('rest', ex.rest));
+
+                tr.append(tdName, tdSets, tdReps, tdWeight, tdRest);
+                tbody.appendChild(tr);
+            });
+
+            day.notes.forEach(note => {
+                const tr = document.createElement('tr');
+                tr.className = 'info-row';
+                const td = document.createElement('td');
+                td.colSpan = 5;
+                td.textContent = note;
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+            tableWrap.appendChild(table);
+            body.appendChild(tableWrap);
+
+            // Mark complete button
+            const footer = document.createElement('div');
+            footer.className = 'workout-footer';
+
+            const btn = document.createElement('button');
+            btn.className = 'btn-complete' + (dayDone ? ' active' : '');
+            btn.textContent = dayDone ? 'Completed today ✓' : 'Mark as complete';
+
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                const now = localStorage.getItem(dayDoneKey) === 'true';
+                localStorage.setItem(dayDoneKey, !now);
+                btn.classList.toggle('active', !now);
+                btn.textContent = !now ? 'Completed today ✓' : 'Mark as complete';
+            });
+
+            footer.appendChild(btn);
+            body.appendChild(footer);
+
+            // Toggle collapse
+            header.addEventListener('click', () => {
+                const open = body.classList.toggle('open');
+                chevron.classList.toggle('open', open);
+            });
+
+            wrap.append(header, body);
+            container.appendChild(wrap);
+        });
+    }
+
+    buildWeeks();
+    buildMeals();
+    buildWorkouts();
+</script>
 
 </body>
 </html>
