@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/tesseract.js@4/dist/tesseract.min.js"></script>
   <style>
     * { font-family: 'Inter', sans-serif; }
     body { background-color: #fff7ed; overscroll-behavior: none; }
@@ -44,6 +45,9 @@
       'mussel','mussels','clam','clams','langoustine','langoustines','crevette',
       'lamb','mutton','rack of lamb','lamb chops','lamb mince','lamb leg','lamb shoulder'
     ];
+
+    const SWEET_CATEGORIES = ['Dessert'];
+    const isSavoury = (meal) => !SWEET_CATEGORIES.includes(meal?.strCategory);
 
     const STAPLES = [
       'salt','pepper','oil','olive oil','vegetable oil','garlic','onion',
@@ -609,7 +613,7 @@
           while (found.length < 2 && attempts < 20) {
             const results = await Promise.all([randomMeal(), randomMeal()]);
             const candidates = results.map(r => r.meals?.[0]).filter(Boolean);
-            const valid = candidates.filter(m => !containsExcluded(m));
+            const valid = candidates.filter(m => !containsExcluded(m) && isSavoury(m));
             found = [...found, ...valid].slice(0, 2);
             attempts++;
           }
@@ -1041,8 +1045,14 @@
     // ============================================================
     // 13. SAVED PAGE
     // ============================================================
-    const AddBookmarkModal = ({ onSave, onClose }) => {
-      const [form, setForm] = useState({ strMeal: '', url: '', imageUrl: '', notes: '', tags: '' });
+    const AddBookmarkModal = ({ onSave, onClose, prefill = null, fromScan = false }) => {
+      const [form, setForm] = useState({
+        strMeal: prefill?.strMeal || '',
+        url: prefill?.url || '',
+        imageUrl: prefill?.imageUrl || '',
+        notes: prefill?.notes || '',
+        tags: prefill?.tags || (fromScan ? 'cookbook' : ''),
+      });
       const [error, setError] = useState('');
 
       useEffect(() => {
@@ -1053,16 +1063,17 @@
       const handleSubmit = (e) => {
         e.preventDefault();
         if (!form.strMeal.trim()) { setError('Recipe name is required'); return; }
-        if (!form.url.trim()) { setError('URL is required'); return; }
+        if (!fromScan && !form.url.trim()) { setError('URL is required'); return; }
         const bm = {
           id: `bm-${Date.now()}`,
           type: 'bookmark',
           strMeal: form.strMeal.trim(),
-          url: form.url.trim(),
+          url: form.url.trim() || null,
           imageUrl: form.imageUrl.trim() || null,
           notes: form.notes.trim() || null,
           tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
           dateAdded: todayStr(),
+          fromScan,
         };
         onSave(bm);
       };
@@ -1071,12 +1082,20 @@
         <div className="fixed inset-0 z-50 flex flex-col bg-black/60">
           <div className="flex-1 overflow-hidden flex flex-col max-w-2xl mx-auto w-full bg-[#fff7ed] mt-4 rounded-t-3xl shadow-2xl">
             <div className="flex items-center justify-between p-5 border-b border-orange-100 bg-white rounded-t-3xl">
-              <h2 className="text-xl font-black text-gray-900">🔖 Save a Recipe</h2>
+              <div>
+                <h2 className="text-xl font-black text-gray-900">{fromScan ? '📚 Save Scanned Recipe' : '🔖 Save a Recipe'}</h2>
+                {fromScan && <p className="text-sm text-orange-500 font-medium">Review and edit the scanned text below</p>}
+              </div>
               <button onClick={onClose} className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xl">×</button>
             </div>
             <div className="flex-1 overflow-y-auto">
               <form onSubmit={handleSubmit} className="p-5 space-y-4">
                 {error && <p className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-xl">{error}</p>}
+                {fromScan && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm text-orange-700">
+                    💡 The text below was read from your photo. Check it carefully and fix any mistakes before saving.
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Recipe Name *</label>
                   <input
@@ -1086,33 +1105,39 @@
                     className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                   />
                 </div>
+                {!fromScan && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">URL *</label>
+                    <input
+                      value={form.url}
+                      onChange={e => setForm(f => ({...f, url: e.target.value}))}
+                      placeholder="https://... or YouTube link"
+                      type="url"
+                      className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                    />
+                  </div>
+                )}
+                {!fromScan && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL <span className="text-gray-400 font-normal">(optional)</span></label>
+                    <input
+                      value={form.imageUrl}
+                      onChange={e => setForm(f => ({...f, imageUrl: e.target.value}))}
+                      placeholder="https://...image.jpg"
+                      type="url"
+                      className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                    />
+                  </div>
+                )}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">URL *</label>
-                  <input
-                    value={form.url}
-                    onChange={e => setForm(f => ({...f, url: e.target.value}))}
-                    placeholder="https://... or YouTube link"
-                    type="url"
-                    className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL <span className="text-gray-400 font-normal">(optional)</span></label>
-                  <input
-                    value={form.imageUrl}
-                    onChange={e => setForm(f => ({...f, imageUrl: e.target.value}))}
-                    placeholder="https://...image.jpg"
-                    type="url"
-                    className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Notes <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    {fromScan ? 'Recipe Text (ingredients & instructions)' : 'Notes'} <span className="text-gray-400 font-normal">{fromScan ? '' : '(optional)'}</span>
+                  </label>
                   <textarea
                     value={form.notes}
                     onChange={e => setForm(f => ({...f, notes: e.target.value}))}
-                    placeholder="e.g. Use pancetta, add extra parmesan..."
-                    rows={3}
+                    placeholder={fromScan ? 'Scanned recipe text will appear here...' : 'e.g. Use pancetta, add extra parmesan...'}
+                    rows={fromScan ? 10 : 3}
                     className="w-full px-4 py-3 rounded-xl border border-orange-200 bg-white text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 resize-none"
                   />
                 </div>
@@ -1129,9 +1154,130 @@
                   type="submit"
                   className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-base hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200"
                 >
-                  💾 Save Bookmark
+                  💾 Save Recipe
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const ScanRecipeModal = ({ onSave, onClose }) => {
+      const [step, setStep] = useState('capture');
+      const [imagePreview, setImagePreview] = useState(null);
+      const [imageFile, setImageFile] = useState(null);
+      const [progress, setProgress] = useState(0);
+      const [prefill, setPrefill] = useState(null);
+      const [scanError, setScanError] = useState('');
+      const fileInputRef = useRef(null);
+
+      useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = ''; };
+      }, []);
+
+      const handleImageSelect = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setImageFile(file);
+        const reader = new FileReader();
+        reader.onload = ev => setImagePreview(ev.target.result);
+        reader.readAsDataURL(file);
+        setStep('preview');
+        setScanError('');
+      };
+
+      const handleScan = async () => {
+        if (!imageFile) return;
+        setStep('scanning');
+        setProgress(0);
+        setScanError('');
+        try {
+          const { data: { text } } = await Tesseract.recognize(imageFile, 'eng', {
+            logger: m => {
+              if (m.status === 'recognizing text') setProgress(Math.round(m.progress * 100));
+            },
+          });
+          const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+          const title = lines.slice(0, 3).find(l => l.length > 3 && l.length < 80) || '';
+          const bodyText = lines.slice(title ? 1 : 0).join('\n');
+          setPrefill({ strMeal: title, notes: bodyText, tags: 'cookbook' });
+          setStep('review');
+        } catch {
+          setScanError('Scanning failed. Make sure the photo is clear and well-lit, then try again.');
+          setStep('preview');
+        }
+      };
+
+      if (step === 'review' && prefill) {
+        return <AddBookmarkModal onSave={onSave} onClose={onClose} prefill={prefill} fromScan={true} />;
+      }
+
+      return (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/60">
+          <div className="flex-1 overflow-hidden flex flex-col max-w-2xl mx-auto w-full bg-[#fff7ed] mt-4 rounded-t-3xl shadow-2xl">
+            <div className="flex items-center justify-between p-5 border-b border-orange-100 bg-white rounded-t-3xl">
+              <div>
+                <h2 className="text-xl font-black text-gray-900">📷 Scan Cookbook Recipe</h2>
+                <p className="text-sm text-gray-500">Point your camera at a recipe page</p>
+              </div>
+              <button onClick={onClose} className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xl">×</button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5">
+              {step === 'capture' && (
+                <div className="flex flex-col items-center justify-center min-h-64 gap-6 py-8">
+                  <div className="text-7xl">📚</div>
+                  <div className="text-center">
+                    <h3 className="font-bold text-lg text-gray-800 mb-2">Photograph your recipe</h3>
+                    <p className="text-sm text-gray-500 max-w-xs">Take a clear, well-lit photo of a cookbook page. The sharper the photo, the better the result.</p>
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} className="hidden" />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-base hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200 active:scale-95"
+                  >
+                    📷 Take Photo / Choose Image
+                  </button>
+                </div>
+              )}
+
+              {step === 'preview' && imagePreview && (
+                <div className="flex flex-col gap-4">
+                  <img src={imagePreview} alt="Recipe preview" className="w-full rounded-2xl object-contain max-h-72 bg-gray-100" />
+                  {scanError && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-xl">{scanError}</p>}
+                  <p className="text-sm text-center text-gray-500">Make sure the text is sharp and the whole recipe is visible.</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => { setStep('capture'); setImagePreview(null); setImageFile(null); }}
+                      className="py-4 rounded-2xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 active:scale-95 transition-all"
+                    >
+                      ↩ Retake
+                    </button>
+                    <button
+                      onClick={handleScan}
+                      className="py-4 rounded-2xl bg-orange-500 text-white font-black hover:bg-orange-600 active:scale-95 transition-all shadow-lg shadow-orange-200"
+                    >
+                      🔍 Scan It
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {step === 'scanning' && (
+                <div className="flex flex-col items-center justify-center min-h-64 gap-6 py-8">
+                  <Spinner size="lg" />
+                  <div className="w-full bg-orange-100 rounded-full h-3 overflow-hidden">
+                    <div className="bg-orange-500 h-3 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-bold text-gray-800">Reading your recipe...</p>
+                    <p className="text-sm text-gray-500 mt-1">{progress}% complete</p>
+                    <p className="text-xs text-gray-400 mt-3">This can take up to a minute depending on the photo size.</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1141,10 +1287,12 @@
     const SavedPage = ({ favourites, onToggleFav, bookmarks, onAddBookmark, onDeleteBookmark, ratings, onOpenMeal }) => {
       const [tab, setTab] = useState('favs');
       const [showAddForm, setShowAddForm] = useState(false);
+      const [showScanForm, setShowScanForm] = useState(false);
 
       const handleSaveBookmark = (bm) => {
         onAddBookmark(bm);
         setShowAddForm(false);
+        setShowScanForm(false);
       };
 
       return (
@@ -1197,17 +1345,25 @@
 
           {tab === 'bookmarks' && (
             <>
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-base hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200 mb-5"
-              >
-                + Add Recipe
-              </button>
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="py-4 rounded-2xl bg-orange-500 text-white font-black text-sm hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200 active:scale-95"
+                >
+                  🔗 Add from URL
+                </button>
+                <button
+                  onClick={() => setShowScanForm(true)}
+                  className="py-4 rounded-2xl bg-gray-900 text-white font-black text-sm hover:bg-gray-800 transition-colors shadow-lg shadow-gray-300 active:scale-95"
+                >
+                  📷 Scan Cookbook
+                </button>
+              </div>
               {bookmarks.length === 0 ? (
                 <EmptyState
                   icon="🔗"
                   title="No bookmarks yet"
-                  subtitle="Save recipes from any website or YouTube video."
+                  subtitle="Save recipes from any website, YouTube video, or photograph a cookbook page."
                 />
               ) : (
                 <div className="grid grid-cols-2 gap-3">
@@ -1226,6 +1382,9 @@
 
           {showAddForm && (
             <AddBookmarkModal onSave={handleSaveBookmark} onClose={() => setShowAddForm(false)} />
+          )}
+          {showScanForm && (
+            <ScanRecipeModal onSave={handleSaveBookmark} onClose={() => setShowScanForm(false)} />
           )}
         </div>
       );
@@ -1443,7 +1602,7 @@
           while (!meal && attempts < 15) {
             const data = await randomMeal();
             const candidate = data.meals?.[0];
-            if (candidate && !containsExcluded(candidate)) {
+            if (candidate && !containsExcluded(candidate) && isSavoury(candidate)) {
               meal = candidate;
             }
             attempts++;
