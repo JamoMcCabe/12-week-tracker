@@ -346,7 +346,7 @@
     // ============================================================
     // 7. RECIPE MODAL
     // ============================================================
-    const RecipeModal = ({ meal, onClose, ratings, onRate, favourites, onToggleFav, pantry, onMakeThis, onAteThis }) => {
+    const RecipeModal = ({ meal, onClose, ratings, onRate, favourites, onToggleFav, pantry, onSaveToList, onAteThis }) => {
       const [fullMeal, setFullMeal] = useState(null);
       const [loading, setLoading] = useState(true);
       const scrollRef = useRef();
@@ -494,17 +494,17 @@
                 )}
 
                 {/* Bottom actions */}
-                <div className="flex gap-3 pt-2 pb-6">
+                <div className="flex flex-col gap-3 pt-2 pb-6">
                   <button
-                    onClick={() => fullMeal && onMakeThis(fullMeal)}
+                    onClick={() => fullMeal && onSaveToList(fullMeal)}
                     disabled={!fullMeal}
-                    className="flex-1 py-4 rounded-2xl bg-orange-500 text-white font-black text-base hover:bg-orange-600 transition-colors disabled:opacity-50 shadow-lg shadow-orange-200"
+                    className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-base hover:bg-orange-600 transition-colors disabled:opacity-50 shadow-lg shadow-orange-200 active:scale-95"
                   >
-                    🛒 I'm Making This!
+                    🛒 Save to Shopping List
                   </button>
                   <button
                     onClick={() => onAteThis(fullMeal || meal)}
-                    className="flex-1 py-4 rounded-2xl bg-green-500 text-white font-black text-base hover:bg-green-600 transition-colors shadow-lg shadow-green-200"
+                    className="w-full py-4 rounded-2xl bg-green-500 text-white font-black text-base hover:bg-green-600 transition-colors shadow-lg shadow-green-200 active:scale-95"
                   >
                     ✅ We Ate This!
                   </button>
@@ -1548,8 +1548,6 @@
       const [shoppingList, setShoppingList] = useState(() => load(KEYS.shoppingList, null));
 
       const [openMeal, setOpenMeal] = useState(null);
-      const [showShoppingGen, setShowShoppingGen] = useState(false);
-      const [shoppingGenMeal, setShoppingGenMeal] = useState(null);
       const [showFaceOff, setShowFaceOff] = useState(false);
       const [spinLoading, setSpinLoading] = useState(false);
 
@@ -1583,13 +1581,18 @@
 
       const handleCloseModal = useCallback(() => {
         setOpenMeal(null);
-        setShowShoppingGen(false);
-        setShoppingGenMeal(null);
       }, []);
 
-      const handleMakeThis = useCallback((meal) => {
-        setShoppingGenMeal(meal);
-        setShowShoppingGen(true);
+      const handleSaveToList = useCallback((meal) => {
+        const ingredients = getMealIngredients(meal);
+        const items = ingredients.map(ing => ({
+          name: ing.name,
+          measure: ing.measure,
+          checked: false,
+        }));
+        setShoppingList({ mealName: meal.strMeal, items });
+        setOpenMeal(null);
+        setTab('shopping');
       }, []);
 
       const handleAteThis = useCallback((meal) => {
@@ -1601,13 +1604,6 @@
         };
         setRecentlyEaten(prev => [entry, ...prev.filter(e => e.mealName !== meal.strMeal)].slice(0, 20));
         setOpenMeal(null);
-      }, []);
-
-      const handleSaveShoppingList = useCallback(({ mealName, items }) => {
-        setShoppingList({ mealName, items });
-        setShowShoppingGen(false);
-        setOpenMeal(null);
-        setTab('shopping');
       }, []);
 
       const handleShoppingUpdate = useCallback((list) => setShoppingList(list), []);
@@ -1743,7 +1739,7 @@
           </nav>
 
           {/* Recipe Modal */}
-          {openMeal && !showShoppingGen && (
+          {openMeal && (
             <RecipeModal
               meal={openMeal}
               onClose={handleCloseModal}
@@ -1752,18 +1748,8 @@
               favourites={favourites}
               onToggleFav={handleToggleFav}
               pantry={pantry}
-              onMakeThis={handleMakeThis}
+              onSaveToList={handleSaveToList}
               onAteThis={handleAteThis}
-            />
-          )}
-
-          {/* Shopping List Generator */}
-          {showShoppingGen && shoppingGenMeal && (
-            <ShoppingListGenerator
-              meal={shoppingGenMeal}
-              pantry={pantry}
-              onSave={handleSaveShoppingList}
-              onBack={() => setShowShoppingGen(false)}
             />
           )}
 
